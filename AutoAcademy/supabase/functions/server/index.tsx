@@ -5,6 +5,13 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 
 const app = new Hono();
 
+const ADMIN_EMAIL = 'admin@autoacademy.com';
+
+const isDefaultAdmin = (email?: string | null) => email?.toLowerCase() === ADMIN_EMAIL;
+
+const hasAdminAccess = (userEmail?: string | null, profileIsAdmin?: boolean | null) =>
+  isDefaultAdmin(userEmail) || Boolean(profileIsAdmin);
+
 // Create Supabase clients
 const getSupabaseClient = () => {
   return createClient(
@@ -186,7 +193,7 @@ app.post("/make-server-a96c109b/courses", async (c) => {
       .eq('id', user.id)
       .single();
 
-    if (!profile?.is_admin) {
+    if (!hasAdminAccess(user.email, profile?.is_admin)) {
       return c.json({ error: 'Admin access required' }, 403);
     }
 
@@ -228,7 +235,7 @@ app.put("/make-server-a96c109b/courses/:id", async (c) => {
       .eq('id', user.id)
       .single();
 
-    if (!profile?.is_admin) {
+    if (!hasAdminAccess(user.email, profile?.is_admin)) {
       return c.json({ error: 'Admin access required' }, 403);
     }
 
@@ -272,7 +279,7 @@ app.delete("/make-server-a96c109b/courses/:id", async (c) => {
       .eq('id', user.id)
       .single();
 
-    if (!profile?.is_admin) {
+    if (!hasAdminAccess(user.email, profile?.is_admin)) {
       return c.json({ error: 'Admin access required' }, 403);
     }
 
@@ -363,7 +370,7 @@ app.get("/make-server-a96c109b/contact", async (c) => {
       .eq('id', user.id)
       .single();
 
-    if (!profile?.is_admin) {
+    if (!hasAdminAccess(user.email, profile?.is_admin)) {
       return c.json({ error: 'Admin access required' }, 403);
     }
 
