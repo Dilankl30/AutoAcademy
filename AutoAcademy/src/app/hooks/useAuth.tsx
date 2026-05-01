@@ -14,6 +14,9 @@ interface AuthState {
 }
 
 const API_BASE = `https://${projectId}.supabase.co/functions/v1/make-server-a96c109b`;
+const ADMIN_EMAIL = 'admin@autoacademy.com';
+
+const isDefaultAdmin = (email?: string | null) => email?.toLowerCase() === ADMIN_EMAIL;
 
 export function useAuth() {
   const [authState, setAuthState] = useState<AuthState>({
@@ -47,7 +50,7 @@ export function useAuth() {
           user: {
             id: data.profile.id,
             email: data.profile.email,
-            is_admin: data.profile.is_admin || false,
+            is_admin: isDefaultAdmin(data.profile.email) || data.profile.is_admin || false,
           },
           loading: false,
           accessToken: token,
@@ -109,7 +112,7 @@ export function useAuth() {
         user: {
           id: data.user.id,
           email: data.user.email,
-          is_admin: email === 'admin@autoacademy.com',
+          is_admin: isDefaultAdmin(data.user.email) || isDefaultAdmin(email),
         },
         loading: false,
         accessToken: data.session.access_token,
