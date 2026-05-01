@@ -1,0 +1,164 @@
+import { X, Mail, Lock, User } from 'lucide-react';
+import { useState } from 'react';
+
+interface AuthModalProps {
+  mode: 'login' | 'register';
+  onClose: () => void;
+  onLogin: (email: string, password: string) => void;
+  onRegister: (email: string, password: string) => void;
+}
+
+export default function AuthModal({ mode, onClose, onLogin, onRegister }: AuthModalProps) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showConfirmation, setShowConfirmation] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (mode === 'login') {
+      onLogin(email, password);
+    } else {
+      if (password === confirmPassword) {
+        onRegister(email, password);
+        setShowConfirmation(true);
+      } else {
+        alert('Las contraseñas no coinciden');
+      }
+    }
+  };
+
+  if (showConfirmation) {
+    return (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-xl p-8 max-w-md w-full mx-4 relative">
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+          >
+            <X className="w-6 h-6" />
+          </button>
+
+          <div className="text-center">
+            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Mail className="w-8 h-8 text-blue-600" />
+            </div>
+            <h3 className="text-2xl font-bold mb-2">Confirma tu correo</h3>
+            <p className="text-gray-600 mb-6">
+              Hemos enviado un enlace de verificación a <strong>{email}</strong>.
+              Por favor, revisa tu bandeja de entrada.
+            </p>
+            <button
+              onClick={onClose}
+              className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              Entendido
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-xl p-8 max-w-md w-full mx-4 relative">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+        >
+          <X className="w-6 h-6" />
+        </button>
+
+        <h3 className="text-2xl font-bold mb-6">
+          {mode === 'login' ? 'Iniciar sesión' : 'Crear cuenta'}
+        </h3>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-2">Correo electrónico</label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg"
+                placeholder="tu@email.com"
+                required
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Contraseña</label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg"
+                placeholder="••••••••"
+                required
+              />
+            </div>
+          </div>
+
+          {mode === 'register' && (
+            <div>
+              <label className="block text-sm font-medium mb-2">Confirmar contraseña</label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg"
+                  placeholder="••••••••"
+                  required
+                />
+              </div>
+            </div>
+          )}
+
+          {mode === 'login' && (
+            <div className="text-right">
+              <a href="#" className="text-sm text-blue-600 hover:underline">
+                ¿Olvidaste tu contraseña?
+              </a>
+            </div>
+          )}
+
+          <button
+            type="submit"
+            className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+          >
+            {mode === 'login' ? 'Iniciar sesión' : 'Crear cuenta'}
+          </button>
+        </form>
+
+        <p className="text-center text-sm text-gray-600 mt-4">
+          {mode === 'login' ? '¿No tienes cuenta?' : '¿Ya tienes cuenta?'}
+          {' '}
+          <button
+            onClick={() => {
+              onClose();
+              setTimeout(() => {
+                if (mode === 'login') {
+                  document.querySelector<HTMLButtonElement>('[data-register]')?.click();
+                } else {
+                  document.querySelector<HTMLButtonElement>('[data-login]')?.click();
+                }
+              }, 100);
+            }}
+            className="text-blue-600 hover:underline"
+          >
+            {mode === 'login' ? 'Regístrate' : 'Inicia sesión'}
+          </button>
+        </p>
+      </div>
+    </div>
+  );
+}

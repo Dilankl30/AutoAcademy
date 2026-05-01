@@ -1,0 +1,105 @@
+import { Mail, Phone, MapPin } from 'lucide-react';
+import { useState } from 'react';
+
+export default function ContactForm() {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    message: ''
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    alert('Mensaje enviado. Nos pondremos en contacto contigo pronto.');
+    setFormData({ name: '', email: '', message: '' });
+  };
+
+  return (
+    <div className="bg-gray-50 py-16">
+      <div className="max-w-7xl mx-auto px-6">
+        <h3 className="text-3xl font-bold text-center mb-12">Contáctanos</h3>
+
+        <div className="grid md:grid-cols-2 gap-12">
+          <div>
+            <h4 className="text-xl font-bold mb-4">Envíanos un mensaje</h4>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Nombre</label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Correo</label>
+                <input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Mensaje</label>
+                <textarea
+                  value={formData.message}
+                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg h-32"
+                  required
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+              >
+                Enviar mensaje
+              </button>
+            </form>
+          </div>
+
+          <div>
+            <h4 className="text-xl font-bold mb-4">Información de contacto</h4>
+            <div className="space-y-4">
+              <div className="flex gap-3">
+                <Mail className="w-6 h-6 text-blue-600 flex-shrink-0" />
+                <div>
+                  <p className="font-medium">Email</p>
+                  <p className="text-gray-600">contacto@autoacademy.com</p>
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <Phone className="w-6 h-6 text-blue-600 flex-shrink-0" />
+                <div>
+                  <p className="font-medium">Teléfono</p>
+                  <p className="text-gray-600">+1 (555) 123-4567</p>
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <MapPin className="w-6 h-6 text-blue-600 flex-shrink-0" />
+                <div>
+                  <p className="font-medium">Dirección</p>
+                  <p className="text-gray-600">123 Tech Street, Ciudad</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 pt-8 border-t">
+              <p className="text-sm text-gray-600 mb-2">Horario de atención</p>
+              <p className="font-medium">Lunes - Viernes: 9:00 AM - 6:00 PM</p>
+              <p className="font-medium">Sábado: 10:00 AM - 2:00 PM</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
