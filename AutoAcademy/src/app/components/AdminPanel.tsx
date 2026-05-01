@@ -15,6 +15,12 @@ interface PackagePlan {
   features: string[];
 }
 
+const DEFAULT_PLANS: PackagePlan[] = [
+  { id: 1, name: 'Básico', subtitle: 'Ideal para principiantes', price: 10, features: ['Acceso a 10 cursos esenciales'] },
+  { id: 2, name: 'Intermedio', subtitle: 'Para quienes buscan profundizar', price: 20, features: ['Todo lo del plan Básico'] },
+  { id: 3, name: 'Completo', subtitle: 'Conviértete en un experto', price: 30, features: ['Todo lo del plan Intermedio'] },
+];
+
 interface Course {
   id: number;
   title: string;
@@ -27,7 +33,7 @@ interface Course {
 
 export default function AdminPanel({ onClose }: AdminPanelProps) {
   const [courses, setCourses] = useState<Course[]>([]);
-  const [plans, setPlans] = useState<PackagePlan[]>([]);
+  const [plans, setPlans] = useState<PackagePlan[]>(DEFAULT_PLANS);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -50,7 +56,23 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
     try {
       const [courseData, packageData] = await Promise.all([api.getCourses(), api.getPackages()]);
       setCourses(courseData);
-      setPlans(packageData);
+
+      if (Array.isArray(packageData) && packageData.length > 0) {
+        const normalizedPlans = packageData.map((plan: any, index: number) => ({
+          id: Number(plan.id ?? index + 1),
+          name: plan.name ?? plan.title ?? DEFAULT_PLANS[index]?.name ?? `Plan ${index + 1}`,
+          subtitle: plan.subtitle ?? plan.description ?? DEFAULT_PLANS[index]?.subtitle ?? '',
+          price: Number(plan.price ?? plan.monthly_price ?? DEFAULT_PLANS[index]?.price ?? 0),
+          features: Array.isArray(plan.features)
+            ? plan.features
+            : typeof plan.features === 'string'
+              ? plan.features.split('\n').filter(Boolean)
+              : Array.isArray(plan.benefits)
+                ? plan.benefits
+                : DEFAULT_PLANS[index]?.features ?? [],
+        }));
+        setPlans(normalizedPlans);
+      }
     } catch (error) {
       console.error('Error loading courses:', error);
       alert('Error al cargar cursos');

@@ -8,7 +8,6 @@ interface Package {
   subtitle: string;
   price: number;
   features: string[];
-  is_highlighted?: boolean;
 }
 
 interface PricingCardsProps {
@@ -16,10 +15,14 @@ interface PricingCardsProps {
   onSelectPackage: (plan: 'Básico' | 'Intermedio' | 'Completo') => void;
 }
 
-
+const DEFAULT_PACKAGES: Package[] = [
+  { id: 1, name: 'Básico', subtitle: 'Ideal para principiantes', price: 10, features: ['Acceso a 10 cursos esenciales', 'Material de apoyo descargable', 'Soporte por correo electrónico', 'Certificado al completar cada curso'] },
+  { id: 2, name: 'Intermedio', subtitle: 'Para quienes buscan profundizar', price: 20, features: ['Todo lo del plan Básico', 'Acceso a cursos avanzados', 'Clases en vivo mensuales', 'Soporte prioritario', 'Evaluaciones personalizadas'] },
+  { id: 3, name: 'Completo', subtitle: 'Conviértete en un experto', price: 30, features: ['Todo lo del plan Intermedio', 'Acceso a todos los cursos y novedades', 'Mentorías 1 a 1 mensuales', 'Comunidad privada exclusiva', 'Recursos premium descargables', 'Certificación profesional final'] },
+];
 
 export default function PricingCards({ selectedPackage, onSelectPackage }: PricingCardsProps) {
-  const [packages, setPackages] = useState<Package[]>([]);
+  const [packages, setPackages] = useState<Package[]>(DEFAULT_PACKAGES);
 
   useEffect(() => {
     loadPackages();
@@ -28,7 +31,23 @@ export default function PricingCards({ selectedPackage, onSelectPackage }: Prici
   const loadPackages = async () => {
     try {
       const data = await api.getPackages();
-      setPackages(data);
+      if (!Array.isArray(data) || data.length === 0) return;
+
+      const normalized = data.map((pkg: any, index: number) => ({
+        id: Number(pkg.id ?? index + 1),
+        name: (pkg.name ?? pkg.title ?? DEFAULT_PACKAGES[index]?.name ?? 'Básico') as Package['name'],
+        subtitle: pkg.subtitle ?? pkg.description ?? DEFAULT_PACKAGES[index]?.subtitle ?? '',
+        price: Number(pkg.price ?? pkg.monthly_price ?? DEFAULT_PACKAGES[index]?.price ?? 0),
+        features: Array.isArray(pkg.features)
+          ? pkg.features
+          : typeof pkg.features === 'string'
+            ? pkg.features.split('\n').filter(Boolean)
+            : Array.isArray(pkg.benefits)
+              ? pkg.benefits
+              : DEFAULT_PACKAGES[index]?.features ?? [],
+      }));
+
+      setPackages(normalized);
     } catch (error) {
       console.error('Error loading packages:', error);
     }
