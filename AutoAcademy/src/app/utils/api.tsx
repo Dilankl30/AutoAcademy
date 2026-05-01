@@ -72,6 +72,22 @@ export const api = {
     return data.packages;
   },
 
+
+
+  updatePackage: async (id: number, packageData: any) => {
+    const response = await fetch(`${API_BASE}/packages/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': getAuthHeader(),
+      },
+      body: JSON.stringify(packageData),
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error);
+    return data.package;
+  },
+
   // Contact
   submitContact: async (contactData: { name: string; email: string; message: string }) => {
     const response = await fetch(`${API_BASE}/contact`, {

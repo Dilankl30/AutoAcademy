@@ -4,6 +4,8 @@ import { projectId, publicAnonKey } from '/utils/supabase/info';
 interface User {
   id: string;
   email: string;
+  username?: string;
+  plan?: 'Básico' | 'Intermedio' | 'Completo' | null;
   is_admin: boolean;
 }
 
@@ -50,6 +52,8 @@ export function useAuth() {
           user: {
             id: data.profile.id,
             email: data.profile.email,
+            username: data.profile.username || data.profile.full_name || undefined,
+            plan: data.profile.plan || data.profile.current_plan || data.profile.package_plan || null,
             is_admin: isDefaultAdmin(data.profile.email) || data.profile.is_admin || false,
           },
           loading: false,
@@ -65,7 +69,7 @@ export function useAuth() {
     }
   };
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (email: string, password: string, username: string) => {
     try {
       const response = await fetch(`${API_BASE}/auth/signup`, {
         method: 'POST',
@@ -112,6 +116,8 @@ export function useAuth() {
         user: {
           id: data.user.id,
           email: data.user.email,
+          username: data.user.user_metadata?.username || undefined,
+          plan: data.user.user_metadata?.plan || null,
           is_admin: isDefaultAdmin(data.user.email) || isDefaultAdmin(email),
         },
         loading: false,
