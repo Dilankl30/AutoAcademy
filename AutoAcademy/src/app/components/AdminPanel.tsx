@@ -106,7 +106,7 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
         image_color: 'bg-blue-600',
       });
       await loadCourses();
-      alert('Curso creado exitosamente');
+      window.dispatchEvent(new CustomEvent('app-success', { detail: '¡Curso añadido exitosamente!' }));
     } catch (error: any) {
       alert(error.message || 'Error al crear curso');
     }

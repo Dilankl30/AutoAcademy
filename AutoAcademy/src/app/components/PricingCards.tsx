@@ -123,6 +123,7 @@ export default function PricingCards({ selectedPackage, onSelectPackage }: Prici
                     onSelectPackage(pkg.name);
                     setCheckoutPlan(pkg);
                     setPaymentMethod('card');
+                    window.dispatchEvent(new CustomEvent('app-success', { detail: `Plan ${pkg.name} seleccionado correctamente.` }));
                   }}
                   className={`w-full py-3 rounded-lg font-medium ${
                     isSelected
