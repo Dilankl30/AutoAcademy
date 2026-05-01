@@ -144,7 +144,9 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
         price: Number(plan.price),
         features: plan.features,
       });
-      alert(`Plan ${plan.name} actualizado`);
+      await loadCourses();
+      window.dispatchEvent(new CustomEvent('plans-updated'));
+      alert(`Plan ${plan.name} actualizado y publicado`);
     } catch (error: any) {
       alert(error.message || 'Error al actualizar plan');
     }

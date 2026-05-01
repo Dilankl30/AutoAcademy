@@ -65,7 +65,9 @@ export const api = {
     const response = await fetch(`${API_BASE}/packages`, {
       headers: {
         'Authorization': getAuthHeader(),
+        'Cache-Control': 'no-cache',
       },
+      cache: 'no-store',
     });
     const data = await response.json();
     if (!response.ok) throw new Error(data.error);
@@ -75,17 +77,38 @@ export const api = {
 
 
   updatePackage: async (id: number, packageData: any) => {
-    const response = await fetch(`${API_BASE}/packages/${id}`, {
-      method: 'PUT',
+    const payload = {
+      ...packageData,
+      monthly_price: packageData.price,
+      description: packageData.subtitle,
+      benefits: packageData.features,
+    };
+
+    const requestOptions = {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': getAuthHeader(),
+        'Cache-Control': 'no-cache',
       },
-      body: JSON.stringify(packageData),
+      body: JSON.stringify(payload),
+      cache: 'no-store' as RequestCache,
+    };
+
+    let response = await fetch(`${API_BASE}/packages/${id}`, {
+      method: 'PUT',
+      ...requestOptions,
     });
+
+    if (!response.ok) {
+      response = await fetch(`${API_BASE}/packages/${id}`, {
+        method: 'PATCH',
+        ...requestOptions,
+      });
+    }
+
     const data = await response.json();
-    if (!response.ok) throw new Error(data.error);
-    return data.package;
+    if (!response.ok) throw new Error(data.error || 'No se pudo actualizar el plan');
+    return data.package || data;
   },
 
   // Contact

@@ -26,6 +26,13 @@ export default function PricingCards({ selectedPackage, onSelectPackage }: Prici
 
   useEffect(() => {
     loadPackages();
+
+    const handlePlansUpdated = () => loadPackages();
+    window.addEventListener('plans-updated', handlePlansUpdated);
+
+    return () => {
+      window.removeEventListener('plans-updated', handlePlansUpdated);
+    };
   }, []);
 
   const loadPackages = async () => {
