@@ -24,9 +24,9 @@ export default function App() {
     }
   };
 
-  const handleRegister = async (email: string, password: string) => {
+  const handleRegister = async (email: string, password: string, username: string) => {
     try {
-      await signUp(email, password);
+      await signUp(email, password, username);
     } catch (error: any) {
       alert(error.message || 'Error al registrarse');
       throw error;
@@ -58,6 +58,7 @@ export default function App() {
         isAdmin={user?.is_admin || false}
         onLogout={handleLogout}
         onAdminClick={() => setShowAdminPanel(true)}
+        username={user?.username}
       />
 
       <main className="flex-1">
