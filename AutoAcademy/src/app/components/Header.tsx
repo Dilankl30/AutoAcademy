@@ -18,9 +18,9 @@ export default function Header({ onLoginClick, onRegisterClick, isLoggedIn, isAd
         <div className="flex items-center gap-8">
           <h1 className="text-2xl font-bold text-blue-600">AutoAcademy</h1>
           <nav className="flex gap-6">
-            <a href="#" className="text-gray-700 hover:text-blue-600">Inicio</a>
-            <a href="#" className="text-gray-700 hover:text-blue-600">Explorar</a>
-            <a href="#" className="text-gray-700 hover:text-blue-600">Recursos</a>
+            <a href="#inicio" className="text-gray-700 hover:text-blue-600">Inicio</a>
+            <a href="#explorar" className="text-gray-700 hover:text-blue-600">Explorar</a>
+            <a href="#contactanos" className="text-gray-700 hover:text-blue-600">Contáctanos</a>
           </nav>
         </div>
 
@@ -36,7 +36,7 @@ export default function Header({ onLoginClick, onRegisterClick, isLoggedIn, isAd
 
           {isLoggedIn ? (
             <div className="flex items-center gap-2">
-              {username && <span className="text-sm text-gray-700">Hola, {username}</span>}
+              {username && <span className="text-sm text-gray-700">Bienvenido, {username}</span>}
               <span className="text-sm text-blue-600 font-medium">{plan ? `Plan: ${plan}` : 'Adquirir plan'}</span>
               {isAdmin && (
                 <button
