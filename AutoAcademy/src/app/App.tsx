@@ -12,8 +12,10 @@ import Footer from './components/Footer';
 export default function App() {
   const [authModal, setAuthModal] = useState<'login' | 'register' | null>(null);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
-  const [selectedPackage, setSelectedPackage] = useState<'Básico' | 'Intermedio' | 'Completo'>('Básico');
+  const [selectedPackage, setSelectedPackage] = useState<'Básico' | 'Intermedio' | 'Completo' | null>(null);
   const { user, loading, signIn, signUp, signOut } = useAuth();
+
+  const activePlan = user?.plan ?? selectedPackage;
 
   const handleLogin = async (email: string, password: string) => {
     try {
@@ -59,12 +61,13 @@ export default function App() {
         onLogout={handleLogout}
         onAdminClick={() => setShowAdminPanel(true)}
         username={user?.username}
+        plan={activePlan}
       />
 
       <main className="flex-1">
         <Hero />
         <PricingCards selectedPackage={selectedPackage} onSelectPackage={setSelectedPackage} />
-        <CourseGrid selectedPackage={selectedPackage} />
+        <CourseGrid selectedPackage={activePlan} />
         <ContactForm />
       </main>
 
