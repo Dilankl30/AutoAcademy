@@ -74,7 +74,7 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
             features: Array.isArray(plan.features)
               ? plan.features
               : typeof plan.features === 'string'
-                ? plan.features.split('\n').filter(Boolean)
+                ? plan.features.split(/\n|,/).map((item: string) => item.trim()).filter(Boolean)
                 : Array.isArray(plan.benefits)
                   ? plan.benefits
                   : DEFAULT_PLANS[index]?.features ?? [],
@@ -291,38 +291,52 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
           <div className="space-y-4">
             {plans.map((plan) => (
               <div key={plan.id} className="bg-white border rounded-lg p-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
-                  <input
-                    type="text"
-                    value={plan.name}
-                    onChange={(e) => updatePlanField(plan.id, 'name', e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded-lg"
-                    placeholder="Nombre del plan"
-                  />
-                  <input
-                    type="text"
-                    value={plan.subtitle}
-                    onChange={(e) => updatePlanField(plan.id, 'subtitle', e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded-lg"
-                    placeholder="Subtítulo"
-                  />
-                  <input
-                    type="number"
-                    value={plan.price}
-                    onChange={(e) => updatePlanField(plan.id, 'price', Number(e.target.value))}
-                    className="px-3 py-2 border border-gray-300 rounded-lg"
-                    placeholder="Precio"
-                  />
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="rounded-xl border p-4 bg-gray-50">
+                    <h5 className="text-2xl font-bold mb-2">{plan.name}</h5>
+                    <p className="text-gray-600 mb-3">{plan.subtitle}</p>
+                    <div className="mb-4"><span className="text-4xl font-bold text-blue-600">${plan.price}</span><span className="text-gray-600">/mes</span></div>
+                    <ul className="space-y-2">
+                      {plan.features.map((feature, idx) => (
+                        <li key={`${plan.id}-${idx}`} className="text-gray-700">✓ {feature}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <div className="grid grid-cols-1 gap-3 mb-3">
+                      <input
+                        type="text"
+                        value={plan.name}
+                        onChange={(e) => updatePlanField(plan.id, 'name', e.target.value)}
+                        className="px-3 py-2 border border-gray-300 rounded-lg"
+                        placeholder="Nombre del plan"
+                      />
+                      <input
+                        type="text"
+                        value={plan.subtitle}
+                        onChange={(e) => updatePlanField(plan.id, 'subtitle', e.target.value)}
+                        className="px-3 py-2 border border-gray-300 rounded-lg"
+                        placeholder="Subtítulo"
+                      />
+                      <input
+                        type="number"
+                        value={plan.price}
+                        onChange={(e) => updatePlanField(plan.id, 'price', Number(e.target.value))}
+                        className="px-3 py-2 border border-gray-300 rounded-lg"
+                        placeholder="Precio"
+                      />
+                    </div>
+                    <textarea
+                      value={plan.features.join('\n')}
+                      onChange={(e) => updatePlanField(plan.id, 'features', e.target.value.split(/\n|,/).map((item) => item.trim()).filter(Boolean))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg h-32"
+                      placeholder="Una característica por línea"
+                    />
+                    <button onClick={() => handleSavePlan(plan)} className="mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                      Guardar plan
+                    </button>
+                  </div>
                 </div>
-                <textarea
-                  value={plan.features.join('\n')}
-                  onChange={(e) => updatePlanField(plan.id, 'features', e.target.value.split('\n').filter(Boolean))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg h-28"
-                  placeholder="Una característica por línea"
-                />
-                <button onClick={() => handleSavePlan(plan)} className="mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                  Guardar plan
-                </button>
               </div>
             ))}
           </div>
