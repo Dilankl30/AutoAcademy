@@ -10,7 +10,7 @@ interface Package {
 }
 
 interface PricingCardsProps {
-  selectedPackage: 'Básico' | 'Intermedio' | 'Completo';
+  selectedPackage: 'Básico' | 'Intermedio' | 'Completo' | null;
   onSelectPackage: (plan: 'Básico' | 'Intermedio' | 'Completo') => void;
 }
 
@@ -32,12 +32,12 @@ export default function PricingCards({ selectedPackage, onSelectPackage }: Prici
             <div
               key={pkg.id}
               className={`bg-white rounded-xl border-2 p-8 ${
-                isSelected || pkg.is_highlighted ? 'border-blue-600 shadow-xl scale-105' : 'border-gray-200'
+                isSelected ? 'border-blue-600 shadow-xl scale-105' : 'border-gray-200'
               }`}
             >
-              {(pkg.is_highlighted || isSelected) && (
+              {isSelected && (
                 <div className="bg-blue-600 text-white text-sm font-medium px-3 py-1 rounded-full inline-block mb-4">
-                  {isSelected ? 'Plan actual' : 'Más popular'}
+                  Plan actual
                 </div>
               )}
 
@@ -61,7 +61,7 @@ export default function PricingCards({ selectedPackage, onSelectPackage }: Prici
               <button
                 onClick={() => onSelectPackage(pkg.name)}
                 className={`w-full py-3 rounded-lg font-medium ${
-                  isSelected || pkg.is_highlighted
+                  isSelected
                     ? 'bg-blue-600 text-white hover:bg-blue-700'
                     : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
                 }`}

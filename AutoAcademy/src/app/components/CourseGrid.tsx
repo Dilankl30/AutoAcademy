@@ -13,7 +13,7 @@ interface Course {
 }
 
 interface CourseGridProps {
-  selectedPackage: 'Básico' | 'Intermedio' | 'Completo';
+  selectedPackage: 'Básico' | 'Intermedio' | 'Completo' | null;
 }
 
 const PACKAGE_LEVEL: Record<'Básico' | 'Intermedio' | 'Completo', number> = {
@@ -62,7 +62,7 @@ export default function CourseGrid({ selectedPackage }: CourseGridProps) {
         <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-6">
           {courses.map((course) => {
             const requiredLevel = PACKAGE_LEVEL[(course.package_requirement as keyof typeof PACKAGE_LEVEL) || 'Completo'] || 3;
-            const userLevel = PACKAGE_LEVEL[selectedPackage];
+            const userLevel = selectedPackage ? PACKAGE_LEVEL[selectedPackage] : 0;
             const hasAccess = userLevel >= requiredLevel;
 
             return (

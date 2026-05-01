@@ -2,7 +2,7 @@ import { Star, Play, BookOpen } from 'lucide-react';
 
 export default function Hero() {
   return (
-    <div className="bg-gradient-to-r from-blue-900 to-blue-700 text-white">
+    <div id="inicio" className="bg-gradient-to-r from-blue-900 to-blue-700 text-white">
       <div className="max-w-7xl mx-auto px-6 py-16">
         <div className="max-w-2xl">
           <h2 className="text-4xl font-bold mb-4">Motores Eléctricos</h2>
@@ -32,6 +32,18 @@ export default function Hero() {
           </div>
         </div>
       </div>
+      <div id="explorar" className="max-w-7xl mx-auto px-6 pb-16">
+        <div className="max-w-3xl bg-white/10 rounded-xl p-6 backdrop-blur-sm">
+          <h3 className="text-2xl font-bold mb-3">¿Cómo usar AutoAcademy?</h3>
+          <ol className="list-decimal pl-5 space-y-2 text-blue-100">
+            <li>Regístrate e inicia sesión con tu cuenta.</li>
+            <li>Selecciona el plan que mejor se adapte a tu nivel.</li>
+            <li>Explora cursos y materiales según tu plan activo.</li>
+            <li>Si tienes dudas, usa la sección de contacto al final de la página.</li>
+          </ol>
+        </div>
+      </div>
+
     </div>
   );
 }

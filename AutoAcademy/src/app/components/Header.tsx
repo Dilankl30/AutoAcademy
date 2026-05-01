@@ -7,18 +7,20 @@ interface HeaderProps {
   isAdmin: boolean;
   onLogout: () => void;
   onAdminClick: () => void;
+  username?: string;
+  plan?: 'Básico' | 'Intermedio' | 'Completo' | null;
 }
 
-export default function Header({ onLoginClick, onRegisterClick, isLoggedIn, isAdmin, onLogout, onAdminClick }: HeaderProps) {
+export default function Header({ onLoginClick, onRegisterClick, isLoggedIn, isAdmin, onLogout, onAdminClick, username, plan }: HeaderProps) {
   return (
     <header className="bg-white border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-8">
           <h1 className="text-2xl font-bold text-blue-600">AutoAcademy</h1>
           <nav className="flex gap-6">
-            <a href="#" className="text-gray-700 hover:text-blue-600">Inicio</a>
-            <a href="#" className="text-gray-700 hover:text-blue-600">Explorar</a>
-            <a href="#" className="text-gray-700 hover:text-blue-600">Recursos</a>
+            <a href="#inicio" className="text-gray-700 hover:text-blue-600">Inicio</a>
+            <a href="#explorar" className="text-gray-700 hover:text-blue-600">Explorar</a>
+            <a href="#contactanos" className="text-gray-700 hover:text-blue-600">Contáctanos</a>
           </nav>
         </div>
 
@@ -33,7 +35,9 @@ export default function Header({ onLoginClick, onRegisterClick, isLoggedIn, isAd
           </div>
 
           {isLoggedIn ? (
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
+              {username && <span className="text-sm text-gray-700">Bienvenido, {username}</span>}
+              <span className="text-sm text-blue-600 font-medium">{plan ? `Plan: ${plan}` : 'Adquirir plan'}</span>
               {isAdmin && (
                 <button
                   onClick={onAdminClick}
