@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth } from './hooks/useAuth';
 import Header from './components/Header';
 import Hero from './components/Hero';
+import BrandTicker from './components/BrandTicker';
 import PricingCards from './components/PricingCards';
 import CourseGrid from './components/CourseGrid';
 import AuthModal from './components/AuthModal';
@@ -12,8 +13,10 @@ import Footer from './components/Footer';
 export default function App() {
   const [authModal, setAuthModal] = useState<'login' | 'register' | null>(null);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
-  const [selectedPackage, setSelectedPackage] = useState<'Básico' | 'Intermedio' | 'Completo'>('Básico');
+  const [selectedPackage, setSelectedPackage] = useState<'Básico' | 'Intermedio' | 'Completo' | null>(null);
   const { user, loading, signIn, signUp, signOut } = useAuth();
+
+  const activePlan = user?.plan ?? selectedPackage;
 
   const handleLogin = async (email: string, password: string) => {
     try {
@@ -24,9 +27,9 @@ export default function App() {
     }
   };
 
-  const handleRegister = async (email: string, password: string) => {
+  const handleRegister = async (email: string, password: string, username: string) => {
     try {
-      await signUp(email, password);
+      await signUp(email, password, username);
     } catch (error: any) {
       alert(error.message || 'Error al registrarse');
       throw error;
@@ -58,12 +61,15 @@ export default function App() {
         isAdmin={user?.is_admin || false}
         onLogout={handleLogout}
         onAdminClick={() => setShowAdminPanel(true)}
+        username={user?.username}
+        plan={activePlan}
       />
 
       <main className="flex-1">
+        <BrandTicker />
         <Hero />
         <PricingCards selectedPackage={selectedPackage} onSelectPackage={setSelectedPackage} />
-        <CourseGrid selectedPackage={selectedPackage} />
+        <CourseGrid selectedPackage={activePlan} />
         <ContactForm />
       </main>
 
