@@ -1,6 +1,25 @@
-import { Star, Play, BookOpen } from 'lucide-react';
+import { Star, Play, BookOpen, X } from 'lucide-react';
+import { useState } from 'react';
+import previewImage from '../../imports/image.png';
+
+const planBenefits = [
+  {
+    name: 'Plan Básico',
+    benefits: ['Cursos esenciales', 'Material descargable', 'Soporte por correo'],
+  },
+  {
+    name: 'Plan Intermedio',
+    benefits: ['Cursos avanzados', 'Clases en vivo', 'Evaluaciones personalizadas'],
+  },
+  {
+    name: 'Plan Completo',
+    benefits: ['Acceso total', 'Mentorías 1 a 1', 'Recursos premium'],
+  },
+];
 
 export default function Hero() {
+  const [showPreview, setShowPreview] = useState(false);
+
   return (
     <div id="inicio" className="bg-gradient-to-r from-blue-900 to-blue-700 text-white">
       <div className="max-w-7xl mx-auto px-6 py-16">
@@ -21,11 +40,17 @@ export default function Hero() {
           </div>
 
           <div className="flex gap-4">
-            <button className="flex items-center gap-2 px-6 py-3 bg-white text-blue-900 rounded-lg hover:bg-blue-50 font-medium">
+            <button
+              onClick={() => setShowPreview(true)}
+              className="flex items-center gap-2 px-6 py-3 bg-white text-blue-900 rounded-lg hover:bg-blue-50 font-medium"
+            >
               <Play className="w-5 h-5" />
               Ver vista previa
             </button>
-            <button className="flex items-center gap-2 px-6 py-3 border-2 border-white text-white rounded-lg hover:bg-white/10 font-medium">
+            <button
+              onClick={() => setShowPreview(true)}
+              className="flex items-center gap-2 px-6 py-3 border-2 border-white text-white rounded-lg hover:bg-white/10 font-medium"
+            >
               <BookOpen className="w-5 h-5" />
               Más información
             </button>
@@ -44,6 +69,40 @@ export default function Hero() {
         </div>
       </div>
 
+      {showPreview && (
+        <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+          <div className="bg-white text-gray-900 rounded-xl max-w-5xl w-full p-6 relative max-h-[90vh] overflow-y-auto">
+            <button onClick={() => setShowPreview(false)} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+              <X className="w-6 h-6" />
+            </button>
+            <h3 className="text-2xl font-bold mb-6">Vista previa de contenido y beneficios</h3>
+
+            <h4 className="text-lg font-semibold mb-3">Ejemplos de PDFs del curso</h4>
+            <div className="grid md:grid-cols-3 gap-4 mb-8">
+              {[1, 2, 3].map((item) => (
+                <div key={item} className="border rounded-lg overflow-hidden bg-gray-50">
+                  <img src={previewImage} alt={`Vista previa PDF ${item}`} className="w-full h-40 object-cover" />
+                  <div className="p-3 text-sm text-gray-700">Guía PDF #{item} - muestra de contenido técnico</div>
+                </div>
+              ))}
+            </div>
+
+            <h4 className="text-lg font-semibold mb-3">Lo que obtienes al comprar cada plan</h4>
+            <div className="grid md:grid-cols-3 gap-4">
+              {planBenefits.map((plan) => (
+                <div key={plan.name} className="border rounded-lg p-4 bg-blue-50">
+                  <h5 className="font-bold mb-2 text-blue-700">{plan.name}</h5>
+                  <ul className="list-disc pl-5 text-sm space-y-1">
+                    {plan.benefits.map((benefit) => (
+                      <li key={benefit}>{benefit}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
