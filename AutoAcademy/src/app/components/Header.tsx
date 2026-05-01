@@ -7,9 +7,11 @@ interface HeaderProps {
   isAdmin: boolean;
   onLogout: () => void;
   onAdminClick: () => void;
+  username?: string;
+  plan?: 'Básico' | 'Intermedio' | 'Completo' | null;
 }
 
-export default function Header({ onLoginClick, onRegisterClick, isLoggedIn, isAdmin, onLogout, onAdminClick }: HeaderProps) {
+export default function Header({ onLoginClick, onRegisterClick, isLoggedIn, isAdmin, onLogout, onAdminClick, username, plan }: HeaderProps) {
   return (
     <header className="bg-white border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -33,7 +35,9 @@ export default function Header({ onLoginClick, onRegisterClick, isLoggedIn, isAd
           </div>
 
           {isLoggedIn ? (
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
+              {username && <span className="text-sm text-gray-700">Hola, {username}</span>}
+              <span className="text-sm text-blue-600 font-medium">{plan ? `Plan: ${plan}` : 'Adquirir plan'}</span>
               {isAdmin && (
                 <button
                   onClick={onAdminClick}
