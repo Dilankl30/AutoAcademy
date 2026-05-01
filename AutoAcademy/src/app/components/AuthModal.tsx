@@ -5,13 +5,14 @@ interface AuthModalProps {
   mode: 'login' | 'register';
   onClose: () => void;
   onLogin: (email: string, password: string) => Promise<void>;
-  onRegister: (email: string, password: string) => Promise<void>;
+  onRegister: (email: string, password: string, username: string) => Promise<void>;
 }
 
 export default function AuthModal({ mode, onClose, onLogin, onRegister }: AuthModalProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [username, setUsername] = useState('');
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -22,7 +23,7 @@ export default function AuthModal({ mode, onClose, onLogin, onRegister }: AuthMo
     } else {
       if (password === confirmPassword) {
         try {
-          await onRegister(email, password);
+          await onRegister(email, password, username.trim());
           setShowConfirmation(true);
         } catch (error) {
           // Error already handled in parent
@@ -80,6 +81,26 @@ export default function AuthModal({ mode, onClose, onLogin, onRegister }: AuthMo
         </h3>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+
+          {mode === 'register' && (
+            <div>
+              <label className="block text-sm font-medium mb-2">Nombre de usuario</label>
+              <div className="relative">
+                <User className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg"
+                  placeholder="tu_usuario"
+                  minLength={3}
+                  maxLength={30}
+                  required
+                />
+              </div>
+            </div>
+          )}
+
           <div>
             <label className="block text-sm font-medium mb-2">Correo electrónico</label>
             <div className="relative">
