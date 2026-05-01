@@ -1,4 +1,4 @@
-import { BookOpen, Video } from 'lucide-react';
+import { BookOpen, Lock, Video } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { api } from '../utils/api';
 
@@ -12,7 +12,17 @@ interface Course {
   idrive_link?: string;
 }
 
-export default function CourseGrid() {
+interface CourseGridProps {
+  selectedPackage: 'Básico' | 'Intermedio' | 'Completo';
+}
+
+const PACKAGE_LEVEL: Record<'Básico' | 'Intermedio' | 'Completo', number> = {
+  Básico: 1,
+  Intermedio: 2,
+  Completo: 3,
+};
+
+export default function CourseGrid({ selectedPackage }: CourseGridProps) {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -50,8 +60,13 @@ export default function CourseGrid() {
         <p className="text-center text-gray-600">No hay cursos disponibles.</p>
       ) : (
         <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {courses.map((course) => (
-            <div key={course.id} className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+          {courses.map((course) => {
+            const requiredLevel = PACKAGE_LEVEL[(course.package_requirement as keyof typeof PACKAGE_LEVEL) || 'Completo'] || 3;
+            const userLevel = PACKAGE_LEVEL[selectedPackage];
+            const hasAccess = userLevel >= requiredLevel;
+
+            return (
+            <div key={course.id} className={`bg-white rounded-lg shadow-sm transition-shadow overflow-hidden ${hasAccess ? 'hover:shadow-md' : 'opacity-70'}`}>
               <div className={`${course.image_color} h-48 flex items-center justify-center relative`}>
                 {course.type === 'book' ? (
                   <BookOpen className="w-16 h-16 text-white" />
@@ -61,6 +76,13 @@ export default function CourseGrid() {
                 <div className="absolute top-3 right-3 bg-white/20 backdrop-blur-sm px-2 py-1 rounded text-white text-xs">
                   {course.type === 'book' ? 'PDF' : 'Video'}
                 </div>
+                {!hasAccess && (
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                    <span className="flex items-center gap-2 text-white font-medium">
+                      <Lock className="w-4 h-4" /> Requiere plan {course.package_requirement}
+                    </span>
+                  </div>
+                )}
               </div>
               <div className="p-4">
                 <h4 className="font-medium mb-2">{course.title}</h4>
@@ -69,7 +91,8 @@ export default function CourseGrid() {
                 </span>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
