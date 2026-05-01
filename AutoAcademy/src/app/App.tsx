@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth } from './hooks/useAuth';
 import Header from './components/Header';
 import Hero from './components/Hero';
+import BrandTicker from './components/BrandTicker';
 import PricingCards from './components/PricingCards';
 import CourseGrid from './components/CourseGrid';
 import AuthModal from './components/AuthModal';
@@ -65,6 +66,7 @@ export default function App() {
       />
 
       <main className="flex-1">
+        <BrandTicker />
         <Hero />
         <PricingCards selectedPackage={selectedPackage} onSelectPackage={setSelectedPackage} />
         <CourseGrid selectedPackage={activePlan} />

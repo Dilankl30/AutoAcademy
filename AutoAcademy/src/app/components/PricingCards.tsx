@@ -91,8 +91,8 @@ export default function PricingCards({ selectedPackage, onSelectPackage }: Prici
             return (
               <div
                 key={pkg.id}
-                className={`bg-white rounded-xl border-2 p-8 ${
-                  isSelected ? 'border-blue-600 shadow-xl scale-105' : 'border-gray-200'
+                className={`bg-white rounded-xl border-2 p-8 transform transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${
+                  isSelected ? 'border-blue-600 shadow-xl scale-[1.02]' : 'border-gray-200 hover:border-blue-300'
                 }`}
               >
                 {isSelected && (
