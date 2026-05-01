@@ -54,28 +54,40 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
 
   const loadCourses = async () => {
     try {
-      const [courseData, packageData] = await Promise.all([api.getCourses(), api.getPackages()]);
-      setCourses(courseData);
+      const [courseResult, packageResult] = await Promise.allSettled([
+        api.getCourses(),
+        api.getPackages(),
+      ]);
 
-      if (Array.isArray(packageData) && packageData.length > 0) {
-        const normalizedPlans = packageData.map((plan: any, index: number) => ({
-          id: Number(plan.id ?? index + 1),
-          name: plan.name ?? plan.title ?? DEFAULT_PLANS[index]?.name ?? `Plan ${index + 1}`,
-          subtitle: plan.subtitle ?? plan.description ?? DEFAULT_PLANS[index]?.subtitle ?? '',
-          price: Number(plan.price ?? plan.monthly_price ?? DEFAULT_PLANS[index]?.price ?? 0),
-          features: Array.isArray(plan.features)
-            ? plan.features
-            : typeof plan.features === 'string'
-              ? plan.features.split('\n').filter(Boolean)
-              : Array.isArray(plan.benefits)
-                ? plan.benefits
-                : DEFAULT_PLANS[index]?.features ?? [],
-        }));
-        setPlans(normalizedPlans);
+      if (courseResult.status === 'fulfilled') {
+        setCourses(courseResult.value);
+      }
+
+      if (packageResult.status === 'fulfilled') {
+        const packageData = packageResult.value;
+        if (Array.isArray(packageData) && packageData.length > 0) {
+          const normalizedPlans = packageData.map((plan: any, index: number) => ({
+            id: Number(plan.id ?? index + 1),
+            name: plan.name ?? plan.title ?? DEFAULT_PLANS[index]?.name ?? `Plan ${index + 1}`,
+            subtitle: plan.subtitle ?? plan.description ?? DEFAULT_PLANS[index]?.subtitle ?? '',
+            price: Number(plan.price ?? plan.monthly_price ?? DEFAULT_PLANS[index]?.price ?? 0),
+            features: Array.isArray(plan.features)
+              ? plan.features
+              : typeof plan.features === 'string'
+                ? plan.features.split('\n').filter(Boolean)
+                : Array.isArray(plan.benefits)
+                  ? plan.benefits
+                  : DEFAULT_PLANS[index]?.features ?? [],
+          }));
+          setPlans(normalizedPlans);
+        }
+      }
+
+      if (courseResult.status === 'rejected' && packageResult.status === 'rejected') {
+        alert('No se pudieron cargar cursos y planes. Intenta nuevamente.');
       }
     } catch (error) {
-      console.error('Error loading courses:', error);
-      alert('Error al cargar cursos');
+      console.error('Error loading admin data:', error);
     } finally {
       setLoading(false);
     }

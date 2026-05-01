@@ -28,10 +28,18 @@ export default function PricingCards({ selectedPackage, onSelectPackage }: Prici
     loadPackages();
 
     const handlePlansUpdated = () => loadPackages();
+    const handleVisibility = () => {
+      if (!document.hidden) loadPackages();
+    };
+
+    const intervalId = window.setInterval(loadPackages, 15000);
     window.addEventListener('plans-updated', handlePlansUpdated);
+    document.addEventListener('visibilitychange', handleVisibility);
 
     return () => {
+      clearInterval(intervalId);
       window.removeEventListener('plans-updated', handlePlansUpdated);
+      document.removeEventListener('visibilitychange', handleVisibility);
     };
   }, []);
 
