@@ -1,51 +1,46 @@
 import { Check } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { api } from '../utils/api';
 
-const packages = [
-  {
-    name: 'Básico',
-    price: 10,
-    subtitle: 'Acceso Limitado',
-    features: [
-      'Vistas previas limitadas',
-      '5 archivos clave (links IDrive)',
-      'Guías PDF básicas',
-      'Acceso parcial al foro',
-      'Soporte por email'
-    ],
-    highlighted: false
-  },
-  {
-    name: 'Profesional',
-    price: 20,
-    subtitle: 'Acceso Ampliado',
-    features: [
-      '15 cursos completos',
-      'Casos de estudio de taller',
-      'Guías avanzadas en PDF',
-      'Acceso completo al foro',
-      'Soporte prioritario',
-      'Actualizaciones mensuales'
-    ],
-    highlighted: false
-  },
-  {
-    name: 'Completo',
-    price: 30,
-    subtitle: 'Guía de Taller Absoluta',
-    features: [
-      'Acceso ilimitado a todo el material',
-      'Guía completa de taller',
-      'Todos los videos y tutoriales',
-      'Descargas prioritarias',
-      'Certificado de finalización',
-      'Soporte 24/7',
-      'Acceso de por vida'
-    ],
-    highlighted: true
-  }
-];
+interface Package {
+  id: number;
+  name: string;
+  subtitle: string;
+  price: number;
+  features: string[];
+  is_highlighted: boolean;
+}
 
 export default function PricingCards() {
+  const [packages, setPackages] = useState<Package[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadPackages();
+  }, []);
+
+  const loadPackages = async () => {
+    try {
+      const data = await api.getPackages();
+      setPackages(data);
+    } catch (error) {
+      console.error('Error loading packages:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto px-6 py-16">
+        <h3 className="text-3xl font-bold text-center mb-12">Paquetes más comprados</h3>
+        <div className="text-center py-12">
+          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-6 py-16">
       <h3 className="text-3xl font-bold text-center mb-12">Paquetes más comprados</h3>
@@ -53,12 +48,12 @@ export default function PricingCards() {
       <div className="grid md:grid-cols-3 gap-8">
         {packages.map((pkg) => (
           <div
-            key={pkg.name}
+            key={pkg.id}
             className={`bg-white rounded-xl border-2 p-8 ${
-              pkg.highlighted ? 'border-blue-600 shadow-xl scale-105' : 'border-gray-200'
+              pkg.is_highlighted ? 'border-blue-600 shadow-xl scale-105' : 'border-gray-200'
             }`}
           >
-            {pkg.highlighted && (
+            {pkg.is_highlighted && (
               <div className="bg-blue-600 text-white text-sm font-medium px-3 py-1 rounded-full inline-block mb-4">
                 Más popular
               </div>
@@ -83,7 +78,7 @@ export default function PricingCards() {
 
             <button
               className={`w-full py-3 rounded-lg font-medium ${
-                pkg.highlighted
+                pkg.is_highlighted
                   ? 'bg-blue-600 text-white hover:bg-blue-700'
                   : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
               }`}

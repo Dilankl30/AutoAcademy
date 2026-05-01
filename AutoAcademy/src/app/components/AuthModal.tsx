@@ -4,8 +4,8 @@ import { useState } from 'react';
 interface AuthModalProps {
   mode: 'login' | 'register';
   onClose: () => void;
-  onLogin: (email: string, password: string) => void;
-  onRegister: (email: string, password: string) => void;
+  onLogin: (email: string, password: string) => Promise<void>;
+  onRegister: (email: string, password: string) => Promise<void>;
 }
 
 export default function AuthModal({ mode, onClose, onLogin, onRegister }: AuthModalProps) {
@@ -14,15 +14,19 @@ export default function AuthModal({ mode, onClose, onLogin, onRegister }: AuthMo
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showConfirmation, setShowConfirmation] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (mode === 'login') {
-      onLogin(email, password);
+      await onLogin(email, password);
     } else {
       if (password === confirmPassword) {
-        onRegister(email, password);
-        setShowConfirmation(true);
+        try {
+          await onRegister(email, password);
+          setShowConfirmation(true);
+        } catch (error) {
+          // Error already handled in parent
+        }
       } else {
         alert('Las contraseñas no coinciden');
       }

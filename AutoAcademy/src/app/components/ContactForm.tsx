@@ -1,5 +1,6 @@
 import { Mail, Phone, MapPin } from 'lucide-react';
 import { useState } from 'react';
+import { api } from '../utils/api';
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({
@@ -8,10 +9,21 @@ export default function ContactForm() {
     message: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Mensaje enviado. Nos pondremos en contacto contigo pronto.');
-    setFormData({ name: '', email: '', message: '' });
+    setSubmitting(true);
+
+    try {
+      await api.submitContact(formData);
+      alert('Mensaje enviado. Nos pondremos en contacto contigo pronto.');
+      setFormData({ name: '', email: '', message: '' });
+    } catch (error: any) {
+      alert(error.message || 'Error al enviar el mensaje');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -57,9 +69,10 @@ export default function ContactForm() {
 
               <button
                 type="submit"
-                className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+                disabled={submitting}
+                className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50"
               >
-                Enviar mensaje
+                {submitting ? 'Enviando...' : 'Enviar mensaje'}
               </button>
             </form>
           </div>
