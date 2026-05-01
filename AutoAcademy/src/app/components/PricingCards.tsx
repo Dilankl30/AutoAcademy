@@ -1,6 +1,4 @@
 import { Check } from 'lucide-react';
-import { useState, useEffect } from 'react';
-import { api } from '../utils/api';
 
 interface Package {
   id: number;
@@ -11,36 +9,52 @@ interface Package {
   is_highlighted: boolean;
 }
 
+const packages: Package[] = [
+  {
+    id: 1,
+    name: 'Básico',
+    subtitle: 'Ideal para principiantes',
+    price: 10,
+    features: [
+      'Acceso a 10 cursos esenciales',
+      'Material de apoyo descargable',
+      'Soporte por correo electrónico',
+      'Certificado al completar cada curso',
+    ],
+    is_highlighted: false,
+  },
+  {
+    id: 2,
+    name: 'Intermedio',
+    subtitle: 'Para quienes buscan profundizar',
+    price: 20,
+    features: [
+      'Todo lo del plan Básico',
+      'Acceso a cursos avanzados',
+      'Clases en vivo mensuales',
+      'Soporte prioritario',
+      'Evaluaciones personalizadas',
+    ],
+    is_highlighted: false,
+  },
+  {
+    id: 3,
+    name: 'Completo',
+    subtitle: 'Conviértete en un experto',
+    price: 30,
+    features: [
+      'Todo lo del plan Intermedio',
+      'Acceso a todos los cursos y novedades',
+      'Mentorías 1 a 1 mensuales',
+      'Comunidad privada exclusiva',
+      'Recursos premium descargables',
+      'Certificación profesional final',
+    ],
+    is_highlighted: true,
+  },
+];
+
 export default function PricingCards() {
-  const [packages, setPackages] = useState<Package[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    loadPackages();
-  }, []);
-
-  const loadPackages = async () => {
-    try {
-      const data = await api.getPackages();
-      setPackages(data);
-    } catch (error) {
-      console.error('Error loading packages:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="max-w-7xl mx-auto px-6 py-16">
-        <h3 className="text-3xl font-bold text-center mb-12">Paquetes más comprados</h3>
-        <div className="text-center py-12">
-          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="max-w-7xl mx-auto px-6 py-16">
       <h3 className="text-3xl font-bold text-center mb-12">Paquetes más comprados</h3>
