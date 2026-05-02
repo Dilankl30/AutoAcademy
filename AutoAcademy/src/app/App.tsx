@@ -15,9 +15,15 @@ export default function App() {
   const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState<'Básico' | 'Intermedio' | 'Completo' | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => (localStorage.getItem('theme') as 'light' | 'dark') || 'light');
   const { user, loading, signIn, signUp, signOut } = useAuth();
 
   const activePlan = user?.plan ?? selectedPackage;
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+    localStorage.setItem('theme', theme);
+  }, [theme]);
 
   useEffect(() => {
     const onSuccess = (event: Event) => {
@@ -72,7 +78,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className={`min-h-screen flex flex-col transition-colors ${theme === 'dark' ? 'bg-slate-950 text-slate-100' : 'bg-white text-slate-900'}`}>
       <Header
         onLoginClick={() => setAuthModal('login')}
         onRegisterClick={() => setAuthModal('register')}
@@ -82,6 +88,8 @@ export default function App() {
         onAdminClick={() => setShowAdminPanel(true)}
         username={user?.username}
         plan={activePlan}
+        theme={theme}
+        onToggleTheme={() => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))}
       />
 
       <main className="flex-1">
