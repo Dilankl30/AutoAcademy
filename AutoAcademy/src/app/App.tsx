@@ -41,6 +41,29 @@ export default function App() {
   };
 
 
+  const activePlan = user?.plan ?? selectedPackage;
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  useEffect(() => {
+    const onSuccess = (event: Event) => {
+      const customEvent = event as CustomEvent<string>;
+      setSuccessMessage(customEvent.detail);
+      setTimeout(() => setSuccessMessage(null), 3500);
+    };
+
+    window.addEventListener('app-success', onSuccess as EventListener);
+    return () => window.removeEventListener('app-success', onSuccess as EventListener);
+  }, []);
+
+  const notifySuccess = (message: string) => {
+    window.dispatchEvent(new CustomEvent('app-success', { detail: message }));
+  };
+
+
   const handleLogin = async (email: string, password: string) => {
     try {
       await signIn(email, password);
