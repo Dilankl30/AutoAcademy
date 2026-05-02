@@ -16,7 +16,30 @@ export default function App() {
   const [selectedPackage, setSelectedPackage] = useState<'Básico' | 'Intermedio' | 'Completo' | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [theme, setTheme] = useState<'light' | 'dark'>(() => (localStorage.getItem('theme') as 'light' | 'dark') || 'light');
-  const { user, loading, signIn, signUp, signOut } = useAuth();
+  const { user, loading, signIn, signUp, signOut, signInWithGoogle } = useAuth();
+
+  const activePlan = user?.plan ?? selectedPackage;
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  useEffect(() => {
+    const onSuccess = (event: Event) => {
+      const customEvent = event as CustomEvent<string>;
+      setSuccessMessage(customEvent.detail);
+      setTimeout(() => setSuccessMessage(null), 3500);
+    };
+
+    window.addEventListener('app-success', onSuccess as EventListener);
+    return () => window.removeEventListener('app-success', onSuccess as EventListener);
+  }, []);
+
+  const notifySuccess = (message: string) => {
+    window.dispatchEvent(new CustomEvent('app-success', { detail: message }));
+  };
+
 
   const activePlan = user?.plan ?? selectedPackage;
 
@@ -108,6 +131,8 @@ export default function App() {
           onClose={() => setAuthModal(null)}
           onLogin={handleLogin}
           onRegister={handleRegister}
+          onSwitchMode={(nextMode) => setAuthModal(nextMode)}
+          onGoogleLogin={signInWithGoogle}
         />
       )}
 

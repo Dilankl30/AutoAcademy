@@ -134,6 +134,12 @@ export function useAuth() {
     }
   };
 
+
+  const signInWithGoogle = async () => {
+    const redirectTo = `${window.location.origin}`;
+    window.location.href = `${API_BASE}/auth/google?redirect_to=${encodeURIComponent(redirectTo)}`;
+  };
+
   const signOut = async () => {
     try {
       const token = localStorage.getItem('access_token');
@@ -160,5 +166,6 @@ export function useAuth() {
     signUp,
     signIn,
     signOut,
+    signInWithGoogle,
   };
 }

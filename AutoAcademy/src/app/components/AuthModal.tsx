@@ -6,9 +6,11 @@ interface AuthModalProps {
   onClose: () => void;
   onLogin: (email: string, password: string) => Promise<void>;
   onRegister: (email: string, password: string, username: string) => Promise<void>;
+  onSwitchMode: (nextMode: 'login' | 'register') => void;
+  onGoogleLogin: () => Promise<void> | void;
 }
 
-export default function AuthModal({ mode, onClose, onLogin, onRegister }: AuthModalProps) {
+export default function AuthModal({ mode, onClose, onLogin, onRegister, onSwitchMode, onGoogleLogin }: AuthModalProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -156,6 +158,16 @@ export default function AuthModal({ mode, onClose, onLogin, onRegister }: AuthMo
             </div>
           )}
 
+          {mode === 'login' && (
+            <button
+              type="button"
+              onClick={() => onGoogleLogin()}
+              className="w-full py-3 border border-gray-300 dark:border-slate-700 rounded-lg font-medium mb-2"
+            >
+              Continuar con Google
+            </button>
+          )}
+
           <button
             type="submit"
             className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
@@ -168,16 +180,7 @@ export default function AuthModal({ mode, onClose, onLogin, onRegister }: AuthMo
           {mode === 'login' ? '¿No tienes cuenta?' : '¿Ya tienes cuenta?'}
           {' '}
           <button
-            onClick={() => {
-              onClose();
-              setTimeout(() => {
-                if (mode === 'login') {
-                  document.querySelector<HTMLButtonElement>('[data-register]')?.click();
-                } else {
-                  document.querySelector<HTMLButtonElement>('[data-login]')?.click();
-                }
-              }, 100);
-            }}
+            onClick={() => onSwitchMode(mode === 'login' ? 'register' : 'login')}
             className="text-blue-600 hover:underline"
           >
             {mode === 'login' ? 'Regístrate' : 'Inicia sesión'}
