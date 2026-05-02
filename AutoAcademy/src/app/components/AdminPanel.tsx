@@ -167,7 +167,7 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto">
-      <div className="bg-white rounded-xl p-8 max-w-6xl w-full mx-4 my-8 relative max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-slate-900 dark:text-slate-100 rounded-xl p-8 max-w-6xl w-full mx-4 my-8 relative max-h-[90vh] overflow-y-auto">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
@@ -185,7 +185,7 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Buscar cursos..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-lg"
             />
           </div>
         </div>
@@ -199,7 +199,7 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
         </button>
 
         {showAddForm && (
-          <div className="bg-gray-50 p-6 rounded-lg mb-6">
+          <div className="bg-gray-50 dark:bg-slate-800 p-6 rounded-lg mb-6">
             <h4 className="font-bold mb-4">Nuevo Curso</h4>
             <div className="grid grid-cols-2 gap-4">
               <div className="col-span-2">
@@ -286,19 +286,19 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
         )}
 
 
-        <div className="bg-gray-50 p-6 rounded-lg mb-6">
+        <div className="bg-gray-50 dark:bg-slate-800 p-6 rounded-lg mb-6">
           <h4 className="font-bold mb-4">Editar planes</h4>
           <div className="space-y-4">
             {plans.map((plan) => (
-              <div key={plan.id} className="bg-white border rounded-lg p-4">
+              <div key={plan.id} className="bg-white dark:bg-slate-900 border dark:border-slate-700 rounded-lg p-4">
                 <div className="grid md:grid-cols-2 gap-4">
-                  <div className="rounded-xl border p-4 bg-gray-50">
+                  <div className="rounded-xl border dark:border-slate-700 p-4 bg-gray-50 dark:bg-slate-800">
                     <h5 className="text-2xl font-bold mb-2">{plan.name}</h5>
-                    <p className="text-gray-600 mb-3">{plan.subtitle}</p>
-                    <div className="mb-4"><span className="text-4xl font-bold text-blue-600">${plan.price}</span><span className="text-gray-600">/mes</span></div>
+                    <p className="text-gray-600 dark:text-slate-300 mb-3">{plan.subtitle}</p>
+                    <div className="mb-4"><span className="text-4xl font-bold text-blue-600">${plan.price}</span><span className="text-gray-600 dark:text-slate-300">/mes</span></div>
                     <ul className="space-y-2">
                       {plan.features.map((feature, idx) => (
-                        <li key={`${plan.id}-${idx}`} className="text-gray-700">✓ {feature}</li>
+                        <li key={`${plan.id}-${idx}`} className="text-gray-700 dark:text-slate-200">✓ {feature}</li>
                       ))}
                     </ul>
                   </div>
@@ -308,28 +308,28 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
                         type="text"
                         value={plan.name}
                         onChange={(e) => updatePlanField(plan.id, 'name', e.target.value)}
-                        className="px-3 py-2 border border-gray-300 rounded-lg"
+                        className="px-3 py-2 border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-lg"
                         placeholder="Nombre del plan"
                       />
                       <input
                         type="text"
                         value={plan.subtitle}
                         onChange={(e) => updatePlanField(plan.id, 'subtitle', e.target.value)}
-                        className="px-3 py-2 border border-gray-300 rounded-lg"
+                        className="px-3 py-2 border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-lg"
                         placeholder="Subtítulo"
                       />
                       <input
                         type="number"
                         value={plan.price}
                         onChange={(e) => updatePlanField(plan.id, 'price', Number(e.target.value))}
-                        className="px-3 py-2 border border-gray-300 rounded-lg"
+                        className="px-3 py-2 border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-lg"
                         placeholder="Precio"
                       />
                     </div>
                     <textarea
                       value={plan.features.join('\n')}
                       onChange={(e) => updatePlanField(plan.id, 'features', e.target.value.split(/\n|,/).map((item) => item.trim()).filter(Boolean))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg h-32"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-lg h-32"
                       placeholder="Una característica por línea"
                     />
                     <button onClick={() => handleSavePlan(plan)} className="mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">

@@ -37,7 +37,7 @@ export default function AuthModal({ mode, onClose, onLogin, onRegister }: AuthMo
   if (showConfirmation) {
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-xl p-8 max-w-md w-full mx-4 relative">
+        <div className="bg-white dark:bg-slate-900 dark:text-slate-100 rounded-xl p-8 max-w-md w-full mx-4 relative">
           <button
             onClick={onClose}
             className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
@@ -50,7 +50,7 @@ export default function AuthModal({ mode, onClose, onLogin, onRegister }: AuthMo
               <Mail className="w-8 h-8 text-blue-600" />
             </div>
             <h3 className="text-2xl font-bold mb-2">Confirma tu correo</h3>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 dark:text-slate-300 mb-6">
               Hemos enviado un enlace de verificación a <strong>{email}</strong>.
               Por favor, revisa tu bandeja de entrada.
             </p>
@@ -68,7 +68,7 @@ export default function AuthModal({ mode, onClose, onLogin, onRegister }: AuthMo
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl p-8 max-w-md w-full mx-4 relative">
+      <div className="bg-white dark:bg-slate-900 dark:text-slate-100 rounded-xl p-8 max-w-md w-full mx-4 relative">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
@@ -91,7 +91,7 @@ export default function AuthModal({ mode, onClose, onLogin, onRegister }: AuthMo
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg"
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-lg"
                   placeholder="tu_usuario"
                   minLength={3}
                   maxLength={30}
@@ -109,7 +109,7 @@ export default function AuthModal({ mode, onClose, onLogin, onRegister }: AuthMo
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-lg"
                 placeholder="tu@email.com"
                 required
               />
@@ -124,7 +124,7 @@ export default function AuthModal({ mode, onClose, onLogin, onRegister }: AuthMo
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-lg"
                 placeholder="••••••••"
                 required
               />
@@ -140,7 +140,7 @@ export default function AuthModal({ mode, onClose, onLogin, onRegister }: AuthMo
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg"
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-lg"
                   placeholder="••••••••"
                   required
                 />
@@ -164,7 +164,7 @@ export default function AuthModal({ mode, onClose, onLogin, onRegister }: AuthMo
           </button>
         </form>
 
-        <p className="text-center text-sm text-gray-600 mt-4">
+        <p className="text-center text-sm text-gray-600 dark:text-slate-300 mt-4">
           {mode === 'login' ? '¿No tienes cuenta?' : '¿Ya tienes cuenta?'}
           {' '}
           <button

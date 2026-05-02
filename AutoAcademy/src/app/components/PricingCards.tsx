@@ -149,24 +149,24 @@ export default function PricingCards({ selectedPackage, onSelectPackage }: Prici
             <p className="text-gray-600 dark:text-slate-300 mb-4">Plan {checkoutPlan.name} - ${checkoutPlan.price}/mes</p>
 
             <div className="flex gap-3 mb-4">
-              <button onClick={() => setPaymentMethod('card')} className={`px-4 py-2 rounded-lg border ${paymentMethod === 'card' ? 'bg-blue-600 text-white border-blue-600' : 'border-gray-300'}`}><CreditCard className="w-4 h-4 inline mr-2" />Tarjeta</button>
-              <button onClick={() => setPaymentMethod('transfer')} className={`px-4 py-2 rounded-lg border ${paymentMethod === 'transfer' ? 'bg-blue-600 text-white border-blue-600' : 'border-gray-300'}`}><Landmark className="w-4 h-4 inline mr-2" />Transferencia</button>
+              <button onClick={() => setPaymentMethod('card')} className={`px-4 py-2 rounded-lg border ${paymentMethod === 'card' ? 'bg-blue-600 text-white border-blue-600' : 'border-gray-300 dark:border-slate-600 dark:text-slate-200'}`}><CreditCard className="w-4 h-4 inline mr-2" />Tarjeta</button>
+              <button onClick={() => setPaymentMethod('transfer')} className={`px-4 py-2 rounded-lg border ${paymentMethod === 'transfer' ? 'bg-blue-600 text-white border-blue-600' : 'border-gray-300 dark:border-slate-600 dark:text-slate-200'}`}><Landmark className="w-4 h-4 inline mr-2" />Transferencia</button>
             </div>
 
             {paymentMethod === 'card' ? (
               <div className="space-y-3">
-                <input className="w-full border rounded-lg px-3 py-2" placeholder="Nombre en la tarjeta" />
-                <input className="w-full border rounded-lg px-3 py-2" placeholder="Número de tarjeta" />
+                <input className="w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 dark:bg-slate-800 dark:text-slate-100" placeholder="Nombre en la tarjeta" />
+                <input className="w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 dark:bg-slate-800 dark:text-slate-100" placeholder="Número de tarjeta" />
                 <div className="grid grid-cols-2 gap-3">
-                  <input className="w-full border rounded-lg px-3 py-2" placeholder="MM/AA" />
-                  <input className="w-full border rounded-lg px-3 py-2" placeholder="CVV" />
+                  <input className="w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 dark:bg-slate-800 dark:text-slate-100" placeholder="MM/AA" />
+                  <input className="w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 dark:bg-slate-800 dark:text-slate-100" placeholder="CVV" />
                 </div>
                 <button className="w-full py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Pagar con tarjeta</button>
               </div>
             ) : (
               <div className="space-y-3">
-                <p className="text-sm text-gray-700">Realiza la transferencia y envía tu comprobante por WhatsApp para validación manual.</p>
-                <div className="bg-gray-50 border rounded-lg p-3 text-sm">
+                <p className="text-sm text-gray-700 dark:text-slate-300">Realiza la transferencia y envía tu comprobante por WhatsApp para validación manual.</p>
+                <div className="bg-gray-50 dark:bg-slate-800 border dark:border-slate-700 rounded-lg p-3 text-sm text-slate-700 dark:text-slate-200">
                   WhatsApp de verificación: <strong>0989961041</strong>
                 </div>
                 <a href={whatsappLink} target="_blank" rel="noreferrer" className="block w-full text-center py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">
