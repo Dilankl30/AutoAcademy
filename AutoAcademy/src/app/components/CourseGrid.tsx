@@ -43,8 +43,8 @@ export default function CourseGrid({ selectedPackage }: CourseGridProps) {
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-6 py-16 bg-gray-50">
-        <h3 className="text-3xl font-bold mb-12">Cursos y Materiales Recientemente Agregados</h3>
+      <div className="max-w-7xl mx-auto px-6 py-16 bg-gray-50 dark:bg-slate-950">
+        <h3 className="text-3xl font-bold mb-12 text-slate-900 dark:text-slate-100">Cursos y Materiales Recientemente Agregados</h3>
         <div className="text-center py-12">
           <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
         </div>
@@ -53,8 +53,8 @@ export default function CourseGrid({ selectedPackage }: CourseGridProps) {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-16 bg-gray-50">
-      <h3 className="text-3xl font-bold mb-12">Cursos y Materiales Recientemente Agregados</h3>
+    <div className="max-w-7xl mx-auto px-6 py-16 bg-gray-50 dark:bg-slate-950">
+      <h3 className="text-3xl font-bold mb-12 text-slate-900 dark:text-slate-100">Cursos y Materiales Recientemente Agregados</h3>
 
       {courses.length === 0 ? (
         <p className="text-center text-gray-600">No hay cursos disponibles.</p>
@@ -66,7 +66,7 @@ export default function CourseGrid({ selectedPackage }: CourseGridProps) {
             const hasAccess = userLevel >= requiredLevel;
 
             return (
-            <div key={course.id} className={`bg-white rounded-lg shadow-sm transition-shadow overflow-hidden ${hasAccess ? 'hover:shadow-md' : 'opacity-70'}`}>
+            <div key={course.id} className={`bg-white dark:bg-slate-900 rounded-lg shadow-sm transition-shadow overflow-hidden border dark:border-slate-800 ${hasAccess ? 'hover:shadow-md' : 'opacity-80'}`}>
               <div className={`${course.image_color} h-48 flex items-center justify-center relative`}>
                 {course.type === 'book' ? (
                   <BookOpen className="w-16 h-16 text-white" />
@@ -85,7 +85,7 @@ export default function CourseGrid({ selectedPackage }: CourseGridProps) {
                 )}
               </div>
               <div className="p-4">
-                <h4 className="font-medium mb-2">{course.title}</h4>
+                <h4 className="font-medium mb-2 text-slate-900 dark:text-slate-100">{course.title}</h4>
                 <span className="inline-block px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded">
                   Incluido en {course.package_requirement}
                 </span>

@@ -27,13 +27,13 @@ export default function ContactForm() {
   };
 
   return (
-    <div id="contactanos" className="bg-gray-50 py-16">
+    <div id="contactanos" className="bg-gray-50 dark:bg-slate-950 py-16">
       <div className="max-w-7xl mx-auto px-6">
-        <h3 className="text-3xl font-bold text-center mb-12">Contáctanos</h3>
+        <h3 className="text-3xl font-bold text-center mb-12 text-slate-900 dark:text-slate-100">Contáctanos</h3>
 
         <div className="grid md:grid-cols-2 gap-12">
           <div>
-            <h4 className="text-xl font-bold mb-4">Envíanos un mensaje</h4>
+            <h4 className="text-xl font-bold mb-4 text-slate-900 dark:text-slate-100">Envíanos un mensaje</h4>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-2">Nombre</label>
@@ -41,7 +41,7 @@ export default function ContactForm() {
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 rounded-lg"
                   required
                 />
               </div>
@@ -52,7 +52,7 @@ export default function ContactForm() {
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 rounded-lg"
                   required
                 />
               </div>
@@ -62,7 +62,7 @@ export default function ContactForm() {
                 <textarea
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg h-32"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 rounded-lg h-32"
                   required
                 />
               </div>
@@ -78,13 +78,13 @@ export default function ContactForm() {
           </div>
 
           <div>
-            <h4 className="text-xl font-bold mb-4">Información de contacto</h4>
+            <h4 className="text-xl font-bold mb-4 text-slate-900 dark:text-slate-100">Información de contacto</h4>
             <div className="space-y-4">
               <div className="flex gap-3">
                 <Mail className="w-6 h-6 text-blue-600 flex-shrink-0" />
                 <div>
                   <p className="font-medium">Email</p>
-                  <p className="text-gray-600">contacto@autoacademy.com</p>
+                  <p className="text-gray-600 dark:text-slate-300">contacto@autoacademy.com</p>
                 </div>
               </div>
 
@@ -92,7 +92,7 @@ export default function ContactForm() {
                 <Phone className="w-6 h-6 text-blue-600 flex-shrink-0" />
                 <div>
                   <p className="font-medium">Teléfono</p>
-                  <p className="text-gray-600">+1 (555) 123-4567</p>
+                  <p className="text-gray-600 dark:text-slate-300">+1 (555) 123-4567</p>
                 </div>
               </div>
 
@@ -100,15 +100,15 @@ export default function ContactForm() {
                 <MapPin className="w-6 h-6 text-blue-600 flex-shrink-0" />
                 <div>
                   <p className="font-medium">Dirección</p>
-                  <p className="text-gray-600">123 Tech Street, Ciudad</p>
+                  <p className="text-gray-600 dark:text-slate-300">123 Tech Street, Ciudad</p>
                 </div>
               </div>
             </div>
 
-            <div className="mt-8 pt-8 border-t">
-              <p className="text-sm text-gray-600 mb-2">Horario de atención</p>
-              <p className="font-medium">Lunes - Viernes: 9:00 AM - 6:00 PM</p>
-              <p className="font-medium">Sábado: 10:00 AM - 2:00 PM</p>
+            <div className="mt-8 pt-8 border-t dark:border-slate-700">
+              <p className="text-sm text-gray-600 dark:text-slate-300 mb-2">Horario de atención</p>
+              <p className="font-medium text-slate-900 dark:text-slate-200">Lunes - Viernes: 9:00 AM - 6:00 PM</p>
+              <p className="font-medium text-slate-900 dark:text-slate-200">Sábado: 10:00 AM - 2:00 PM</p>
             </div>
           </div>
         </div>

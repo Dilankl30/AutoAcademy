@@ -83,7 +83,7 @@ export default function PricingCards({ selectedPackage, onSelectPackage }: Prici
   return (
     <>
       <div className="max-w-7xl mx-auto px-6 py-16">
-        <h3 className="text-3xl font-bold text-center mb-12">Paquetes más comprados</h3>
+        <h3 className="text-3xl font-bold text-center mb-12 text-slate-900 dark:text-slate-100">Paquetes más comprados</h3>
         <div className="grid md:grid-cols-3 gap-8">
           {packages.map((pkg) => {
             const isSelected = selectedPackage === pkg.name;
@@ -91,8 +91,8 @@ export default function PricingCards({ selectedPackage, onSelectPackage }: Prici
             return (
               <div
                 key={pkg.id}
-                className={`bg-white rounded-xl border-2 p-8 transform transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${
-                  isSelected ? 'border-blue-600 shadow-xl scale-[1.02]' : 'border-gray-200 hover:border-blue-300'
+                className={`bg-white dark:bg-slate-900 rounded-xl border-2 p-8 transform transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${
+                  isSelected ? 'border-blue-600 shadow-xl scale-[1.02]' : 'border-gray-200 dark:border-slate-700 hover:border-blue-300'
                 }`}
               >
                 {isSelected && (
@@ -102,18 +102,18 @@ export default function PricingCards({ selectedPackage, onSelectPackage }: Prici
                 )}
 
                 <h4 className="text-2xl font-bold mb-2">{pkg.name}</h4>
-                <p className="text-gray-600 mb-4">{pkg.subtitle}</p>
+                <p className="text-gray-600 dark:text-slate-300 mb-4">{pkg.subtitle}</p>
 
                 <div className="mb-6">
                   <span className="text-4xl font-bold text-blue-600">${pkg.price}</span>
-                  <span className="text-gray-600">/mes</span>
+                  <span className="text-gray-600 dark:text-slate-300">/mes</span>
                 </div>
 
                 <ul className="space-y-3 mb-8">
                   {pkg.features.map((feature, index) => (
                     <li key={index} className="flex gap-2">
                       <Check className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                      <span className="text-gray-700">{feature}</span>
+                      <span className="text-gray-700 dark:text-slate-200">{feature}</span>
                     </li>
                   ))}
                 </ul>
@@ -141,12 +141,12 @@ export default function PricingCards({ selectedPackage, onSelectPackage }: Prici
 
       {checkoutPlan && (
         <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl w-full max-w-2xl p-6 relative">
+          <div className="bg-white dark:bg-slate-900 rounded-xl w-full max-w-2xl p-6 relative">
             <button onClick={() => setCheckoutPlan(null)} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
               <X className="w-5 h-5" />
             </button>
             <h4 className="text-2xl font-bold mb-1">Proceder al pago</h4>
-            <p className="text-gray-600 mb-4">Plan {checkoutPlan.name} - ${checkoutPlan.price}/mes</p>
+            <p className="text-gray-600 dark:text-slate-300 mb-4">Plan {checkoutPlan.name} - ${checkoutPlan.price}/mes</p>
 
             <div className="flex gap-3 mb-4">
               <button onClick={() => setPaymentMethod('card')} className={`px-4 py-2 rounded-lg border ${paymentMethod === 'card' ? 'bg-blue-600 text-white border-blue-600' : 'border-gray-300'}`}><CreditCard className="w-4 h-4 inline mr-2" />Tarjeta</button>

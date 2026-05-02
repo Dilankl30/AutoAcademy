@@ -42,7 +42,7 @@ export default function Header({ onLoginClick, onRegisterClick, isLoggedIn, isAd
 
           {isLoggedIn ? (
             <div className="flex items-center gap-2">
-              {username && <span className="text-sm text-gray-700">Bienvenido, {username}</span>}
+              {username && <span className={`${theme === "dark" ? "text-slate-200" : "text-gray-700"} text-sm`}>Bienvenido, {username}</span>}
               <span className="text-sm text-blue-600 font-medium">{plan ? `Plan: ${plan}` : 'Adquirir plan'}</span>
               {isAdmin && (
                 <button
@@ -54,7 +54,7 @@ export default function Header({ onLoginClick, onRegisterClick, isLoggedIn, isAd
               )}
               <button
                 onClick={onLogout}
-                className="px-4 py-2 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50"
+                className={`px-4 py-2 border border-blue-600 text-blue-600 rounded-lg ${theme === "dark" ? "hover:bg-slate-800" : "hover:bg-blue-50"}`}
               >
                 Cerrar sesión
               </button>
@@ -63,7 +63,7 @@ export default function Header({ onLoginClick, onRegisterClick, isLoggedIn, isAd
             <div className="flex gap-2">
               <button
                 onClick={onLoginClick}
-                className="px-4 py-2 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50"
+                className={`px-4 py-2 border border-blue-600 text-blue-600 rounded-lg ${theme === "dark" ? "hover:bg-slate-800" : "hover:bg-blue-50"}`}
               >
                 Iniciar sesión
               </button>
