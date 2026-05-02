@@ -137,7 +137,25 @@ export function useAuth() {
 
   const signInWithGoogle = async () => {
     const redirectTo = `${window.location.origin}`;
-    window.location.href = `${API_BASE}/auth/google?redirect_to=${encodeURIComponent(redirectTo)}`;
+
+    const response = await fetch(`${API_BASE}/auth/google?redirect_to=${encodeURIComponent(redirectTo)}`, {
+      headers: {
+        'Authorization': `Bearer ${publicAnonKey}`,
+      },
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(data.error || data.message || 'No se pudo iniciar sesión con Google');
+    }
+
+    const oauthUrl = data.url || data.redirect_url;
+    if (!oauthUrl) {
+      throw new Error('No se recibió la URL de autenticación de Google');
+    }
+
+    window.location.href = oauthUrl;
   };
 
   const signOut = async () => {
