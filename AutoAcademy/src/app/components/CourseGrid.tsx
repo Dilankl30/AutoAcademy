@@ -16,6 +16,15 @@ interface CourseGridProps {
   selectedPackage: 'Básico' | 'Intermedio' | 'Completo' | null;
 }
 
+
+const normalizeExternalUrl = (url?: string) => {
+  if (!url) return '';
+  const trimmed = url.trim();
+  if (!trimmed) return '';
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return `https://${trimmed}`;
+};
+
 const PACKAGE_LEVEL: Record<'Básico' | 'Intermedio' | 'Completo', number> = {
   Básico: 1,
   Intermedio: 2,
@@ -115,7 +124,7 @@ export default function CourseGrid({ selectedPackage }: CourseGridProps) {
             {selectedCourse.idrive_link ? (
               <div className="space-y-4">
                 <a
-                  href={selectedCourse.idrive_link}
+                  href={normalizeExternalUrl(selectedCourse.idrive_link)}
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
