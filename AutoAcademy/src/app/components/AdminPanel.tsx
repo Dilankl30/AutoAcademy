@@ -6,6 +6,21 @@ interface AdminPanelProps {
   onClose: () => void;
 }
 
+
+interface PackagePlan {
+  id: number;
+  name: string;
+  subtitle: string;
+  price: number;
+  features: string[];
+}
+
+const DEFAULT_PLANS: PackagePlan[] = [
+  { id: 1, name: 'Básico', subtitle: 'Ideal para principiantes', price: 10, features: ['Acceso a 10 cursos esenciales'] },
+  { id: 2, name: 'Intermedio', subtitle: 'Para quienes buscan profundizar', price: 20, features: ['Todo lo del plan Básico'] },
+  { id: 3, name: 'Completo', subtitle: 'Conviértete en un experto', price: 30, features: ['Todo lo del plan Intermedio'] },
+];
+
 interface Course {
   id: number;
   title: string;
@@ -18,6 +33,7 @@ interface Course {
 
 export default function AdminPanel({ onClose }: AdminPanelProps) {
   const [courses, setCourses] = useState<Course[]>([]);
+  const [plans, setPlans] = useState<PackagePlan[]>(DEFAULT_PLANS);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -38,11 +54,40 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
 
   const loadCourses = async () => {
     try {
-      const data = await api.getCourses();
-      setCourses(data);
+      const [courseResult, packageResult] = await Promise.allSettled([
+        api.getCourses(),
+        api.getPackages(),
+      ]);
+
+      if (courseResult.status === 'fulfilled') {
+        setCourses(courseResult.value);
+      }
+
+      if (packageResult.status === 'fulfilled') {
+        const packageData = packageResult.value;
+        if (Array.isArray(packageData) && packageData.length > 0) {
+          const normalizedPlans = packageData.map((plan: any, index: number) => ({
+            id: Number(plan.id ?? index + 1),
+            name: plan.name ?? plan.title ?? DEFAULT_PLANS[index]?.name ?? `Plan ${index + 1}`,
+            subtitle: plan.subtitle ?? plan.description ?? DEFAULT_PLANS[index]?.subtitle ?? '',
+            price: Number(plan.price ?? plan.monthly_price ?? DEFAULT_PLANS[index]?.price ?? 0),
+            features: Array.isArray(plan.features)
+              ? plan.features
+              : typeof plan.features === 'string'
+                ? plan.features.split(/\n|,/).map((item: string) => item.trim()).filter(Boolean)
+                : Array.isArray(plan.benefits)
+                  ? plan.benefits
+                  : DEFAULT_PLANS[index]?.features ?? [],
+          }));
+          setPlans(normalizedPlans);
+        }
+      }
+
+      if (courseResult.status === 'rejected' && packageResult.status === 'rejected') {
+        alert('No se pudieron cargar cursos y planes. Intenta nuevamente.');
+      }
     } catch (error) {
-      console.error('Error loading courses:', error);
-      alert('Error al cargar cursos');
+      console.error('Error loading admin data:', error);
     } finally {
       setLoading(false);
     }
@@ -61,7 +106,7 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
         image_color: 'bg-blue-600',
       });
       await loadCourses();
-      alert('Curso creado exitosamente');
+      window.dispatchEvent(new CustomEvent('app-success', { detail: '¡Curso añadido exitosamente!' }));
     } catch (error: any) {
       alert(error.message || 'Error al crear curso');
     }
@@ -98,6 +143,27 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
   const filteredCourses = courses.filter(c =>
     c.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const updatePlanField = (id: number, field: keyof PackagePlan, value: string | number | string[]) => {
+    setPlans((prev) => prev.map((plan) => (plan.id === id ? { ...plan, [field]: value } : plan)));
+  };
+
+  const handleSavePlan = async (plan: PackagePlan) => {
+    try {
+      await api.updatePackage(plan.id, {
+        name: plan.name,
+        subtitle: plan.subtitle,
+        price: Number(plan.price),
+        features: plan.features,
+      });
+      await loadCourses();
+      window.dispatchEvent(new CustomEvent('plans-updated'));
+      alert(`Plan ${plan.name} actualizado y publicado`);
+    } catch (error: any) {
+      alert(error.message || 'Error al actualizar plan');
+    }
+  };
+
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto">
@@ -218,6 +284,63 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
             </button>
           </div>
         )}
+
+
+        <div className="bg-gray-50 p-6 rounded-lg mb-6">
+          <h4 className="font-bold mb-4">Editar planes</h4>
+          <div className="space-y-4">
+            {plans.map((plan) => (
+              <div key={plan.id} className="bg-white border rounded-lg p-4">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="rounded-xl border p-4 bg-gray-50">
+                    <h5 className="text-2xl font-bold mb-2">{plan.name}</h5>
+                    <p className="text-gray-600 mb-3">{plan.subtitle}</p>
+                    <div className="mb-4"><span className="text-4xl font-bold text-blue-600">${plan.price}</span><span className="text-gray-600">/mes</span></div>
+                    <ul className="space-y-2">
+                      {plan.features.map((feature, idx) => (
+                        <li key={`${plan.id}-${idx}`} className="text-gray-700">✓ {feature}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <div className="grid grid-cols-1 gap-3 mb-3">
+                      <input
+                        type="text"
+                        value={plan.name}
+                        onChange={(e) => updatePlanField(plan.id, 'name', e.target.value)}
+                        className="px-3 py-2 border border-gray-300 rounded-lg"
+                        placeholder="Nombre del plan"
+                      />
+                      <input
+                        type="text"
+                        value={plan.subtitle}
+                        onChange={(e) => updatePlanField(plan.id, 'subtitle', e.target.value)}
+                        className="px-3 py-2 border border-gray-300 rounded-lg"
+                        placeholder="Subtítulo"
+                      />
+                      <input
+                        type="number"
+                        value={plan.price}
+                        onChange={(e) => updatePlanField(plan.id, 'price', Number(e.target.value))}
+                        className="px-3 py-2 border border-gray-300 rounded-lg"
+                        placeholder="Precio"
+                      />
+                    </div>
+                    <textarea
+                      value={plan.features.join('\n')}
+                      onChange={(e) => updatePlanField(plan.id, 'features', e.target.value.split(/\n|,/).map((item) => item.trim()).filter(Boolean))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg h-32"
+                      placeholder="Una característica por línea"
+                    />
+                    <button onClick={() => handleSavePlan(plan)} className="mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                      Guardar plan
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
 
         {loading ? (
           <div className="text-center py-12">
