@@ -161,7 +161,13 @@ export default function AuthModal({ mode, onClose, onLogin, onRegister, onSwitch
           {mode === 'login' && (
             <button
               type="button"
-              onClick={() => onGoogleLogin()}
+              onClick={async () => {
+                try {
+                  await onGoogleLogin();
+                } catch (error: any) {
+                  alert(error.message || 'No se pudo iniciar con Google');
+                }
+              }}
               className="w-full py-3 border border-gray-300 dark:border-slate-700 rounded-lg font-medium mb-2"
             >
               Continuar con Google

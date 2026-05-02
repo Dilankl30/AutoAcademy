@@ -137,25 +137,8 @@ export function useAuth() {
 
   const signInWithGoogle = async () => {
     const redirectTo = `${window.location.origin}`;
-
-    const response = await fetch(`${API_BASE}/auth/google?redirect_to=${encodeURIComponent(redirectTo)}`, {
-      headers: {
-        'Authorization': `Bearer ${publicAnonKey}`,
-      },
-    });
-
-    const data = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-      throw new Error(data.error || data.message || 'No se pudo iniciar sesión con Google');
-    }
-
-    const oauthUrl = data.url || data.redirect_url;
-    if (!oauthUrl) {
-      throw new Error('No se recibió la URL de autenticación de Google');
-    }
-
-    window.location.href = oauthUrl;
+    const oauthUrl = `https://${projectId}.supabase.co/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(redirectTo)}`;
+    window.location.assign(oauthUrl);
   };
 
   const signOut = async () => {
