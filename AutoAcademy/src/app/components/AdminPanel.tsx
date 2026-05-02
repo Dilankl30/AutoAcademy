@@ -66,7 +66,10 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
       if (packageResult.status === 'fulfilled') {
         const packageData = packageResult.value;
         if (Array.isArray(packageData) && packageData.length > 0) {
-          const normalizedPlans = packageData.map((plan: any, index: number) => ({
+          const allowedPlanNames = ['Básico', 'Intermedio', 'Completo'];
+          const normalizedPlans = packageData
+            .filter((plan: any, index: number) => allowedPlanNames.includes(plan.name ?? plan.title ?? DEFAULT_PLANS[index]?.name))
+            .map((plan: any, index: number) => ({
             id: Number(plan.id ?? index + 1),
             name: plan.name ?? plan.title ?? DEFAULT_PLANS[index]?.name ?? `Plan ${index + 1}`,
             subtitle: plan.subtitle ?? plan.description ?? DEFAULT_PLANS[index]?.subtitle ?? '',
@@ -79,7 +82,8 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
                   ? plan.benefits
                   : DEFAULT_PLANS[index]?.features ?? [],
           }));
-          setPlans(normalizedPlans);
+          const sortedPlans = normalizedPlans.sort((a: PackagePlan, b: PackagePlan) => allowedPlanNames.indexOf(a.name) - allowedPlanNames.indexOf(b.name));
+          setPlans(sortedPlans);
         }
       }
 
@@ -146,6 +150,28 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
 
   const updatePlanField = (id: number, field: keyof PackagePlan, value: string | number | string[]) => {
     setPlans((prev) => prev.map((plan) => (plan.id === id ? { ...plan, [field]: value } : plan)));
+  };
+
+
+
+  const addFeature = (id: number) => {
+    setPlans((prev) => prev.map((plan) => (plan.id === id ? { ...plan, features: [...plan.features, ''] } : plan)));
+  };
+
+  const updateFeature = (id: number, idx: number, value: string) => {
+    setPlans((prev) => prev.map((plan) => {
+      if (plan.id !== id) return plan;
+      const nextFeatures = [...plan.features];
+      nextFeatures[idx] = value;
+      return { ...plan, features: nextFeatures };
+    }));
+  };
+
+  const removeFeature = (id: number, idx: number) => {
+    setPlans((prev) => prev.map((plan) => {
+      if (plan.id !== id) return plan;
+      return { ...plan, features: plan.features.filter((_, index) => index !== idx) };
+    }));
   };
 
   const handleSavePlan = async (plan: PackagePlan) => {
@@ -231,7 +257,7 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                 >
                   <option value="Básico">Básico</option>
-                  <option value="Profesional">Profesional</option>
+                  <option value="Intermedio">Intermedio</option>
                   <option value="Completo">Completo</option>
                 </select>
               </div>
@@ -326,15 +352,35 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
                         placeholder="Precio"
                       />
                     </div>
-                    <textarea
-                      value={plan.features.join('\n')}
-                      onChange={(e) => updatePlanField(plan.id, 'features', e.target.value.split(/\n|,/).map((item) => item.trim()).filter(Boolean))}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-lg h-32"
-                      placeholder="Una característica por línea"
-                    />
-                    <button onClick={() => handleSavePlan(plan)} className="mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                      Guardar plan
-                    </button>
+                    <div className="space-y-2">
+                      {plan.features.map((feature, idx) => (
+                        <div key={`${plan.id}-feature-${idx}`} className="flex gap-2">
+                          <input
+                            type="text"
+                            value={feature}
+                            onChange={(e) => updateFeature(plan.id, idx, e.target.value)}
+                            className="flex-1 px-3 py-2 border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-lg"
+                            placeholder={`Característica ${idx + 1}`}
+                          />
+                          <button
+                            onClick={() => removeFeature(plan.id, idx)}
+                            className="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                            type="button"
+                          >
+                            Quitar
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="mt-3 flex gap-2">
+                      <button onClick={() => addFeature(plan.id)} className="px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600" type="button">
+                        + Agregar característica
+                      </button>
+                      <button onClick={() => handleSavePlan(plan)} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        Aceptar cambios
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
