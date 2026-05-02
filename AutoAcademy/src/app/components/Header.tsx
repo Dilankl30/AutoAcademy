@@ -1,4 +1,4 @@
-import { Search } from 'lucide-react';
+import { Search, Moon, Sun } from 'lucide-react';
 
 interface HeaderProps {
   onLoginClick: () => void;
@@ -7,18 +7,22 @@ interface HeaderProps {
   isAdmin: boolean;
   onLogout: () => void;
   onAdminClick: () => void;
+  username?: string;
+  plan?: 'Básico' | 'Intermedio' | 'Completo' | null;
+  theme: 'light' | 'dark';
+  onToggleTheme: () => void;
 }
 
-export default function Header({ onLoginClick, onRegisterClick, isLoggedIn, isAdmin, onLogout, onAdminClick }: HeaderProps) {
+export default function Header({ onLoginClick, onRegisterClick, isLoggedIn, isAdmin, onLogout, onAdminClick, username, plan, theme, onToggleTheme }: HeaderProps) {
   return (
-    <header className="bg-white border-b border-gray-200">
+    <header className={`sticky top-0 z-40 border-b backdrop-blur ${theme === "dark" ? "bg-slate-900/90 border-slate-800" : "bg-white/90 border-gray-200"}`}>
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-8">
           <h1 className="text-2xl font-bold text-blue-600">AutoAcademy</h1>
           <nav className="flex gap-6">
-            <a href="#" className="text-gray-700 hover:text-blue-600">Inicio</a>
-            <a href="#" className="text-gray-700 hover:text-blue-600">Explorar</a>
-            <a href="#" className="text-gray-700 hover:text-blue-600">Recursos</a>
+            <a href="#inicio" className={`${theme === "dark" ? "text-slate-200" : "text-gray-700"} hover:text-blue-600`}>Inicio</a>
+            <a href="#explorar" className={`${theme === "dark" ? "text-slate-200" : "text-gray-700"} hover:text-blue-600`}>Explorar</a>
+            <a href="#contactanos" className={`${theme === "dark" ? "text-slate-200" : "text-gray-700"} hover:text-blue-600`}>Contáctanos</a>
           </nav>
         </div>
 
@@ -27,13 +31,19 @@ export default function Header({ onLoginClick, onRegisterClick, isLoggedIn, isAd
             <input
               type="text"
               placeholder="Buscar cursos..."
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg w-64"
+              className={`pl-10 pr-4 py-2 border rounded-lg w-64 ${theme === 'dark' ? 'bg-slate-800 border-slate-700 text-slate-100' : 'border-gray-300'}`}
             />
             <Search className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
           </div>
 
+          <button onClick={onToggleTheme} className={`p-2 rounded-lg border ${theme === 'dark' ? 'border-slate-700 text-yellow-300' : 'border-gray-300 text-gray-700'}`} title="Cambiar tema">
+            {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </button>
+
           {isLoggedIn ? (
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
+              {username && <span className="text-sm text-gray-700">Bienvenido, {username}</span>}
+              <span className="text-sm text-blue-600 font-medium">{plan ? `Plan: ${plan}` : 'Adquirir plan'}</span>
               {isAdmin && (
                 <button
                   onClick={onAdminClick}
