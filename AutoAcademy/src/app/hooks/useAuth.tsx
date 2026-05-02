@@ -135,10 +135,19 @@ export function useAuth() {
   };
 
 
-  const signInWithGoogle = async () => {
-    const redirectTo = `${window.location.origin}`;
-    const oauthUrl = `https://${projectId}.supabase.co/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(redirectTo)}`;
-    window.location.assign(oauthUrl);
+  const verifyEmailCode = async (email: string, code: string) => {
+    const response = await fetch(`${API_BASE}/auth/verify-email`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${publicAnonKey}`,
+      },
+      body: JSON.stringify({ email, code }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Código inválido o expirado');
+    return data;
   };
 
   const signOut = async () => {
@@ -167,6 +176,6 @@ export function useAuth() {
     signUp,
     signIn,
     signOut,
-    signInWithGoogle,
+    verifyEmailCode,
   };
 }

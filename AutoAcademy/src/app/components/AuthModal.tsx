@@ -7,15 +7,17 @@ interface AuthModalProps {
   onLogin: (email: string, password: string) => Promise<void>;
   onRegister: (email: string, password: string, username: string) => Promise<void>;
   onSwitchMode: (nextMode: 'login' | 'register') => void;
-  onGoogleLogin: () => Promise<void> | void;
+  onVerifyEmail: (email: string, code: string) => Promise<void>;
 }
 
-export default function AuthModal({ mode, onClose, onLogin, onRegister, onSwitchMode, onGoogleLogin }: AuthModalProps) {
+export default function AuthModal({ mode, onClose, onLogin, onRegister, onSwitchMode, onVerifyEmail }: AuthModalProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [username, setUsername] = useState('');
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [verificationCode, setVerificationCode] = useState('');
+  const [verifying, setVerifying] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,15 +54,42 @@ export default function AuthModal({ mode, onClose, onLogin, onRegister, onSwitch
               <Mail className="w-8 h-8 text-blue-600" />
             </div>
             <h3 className="text-2xl font-bold mb-2">Confirma tu correo</h3>
-            <p className="text-gray-600 dark:text-slate-300 mb-6">
-              Hemos enviado un enlace de verificación a <strong>{email}</strong>.
-              Por favor, revisa tu bandeja de entrada.
+            <p className="text-gray-600 dark:text-slate-300 mb-4">
+              Te enviamos un código de verificación a <strong>{email}</strong>.
             </p>
+
+            <input
+              type="text"
+              value={verificationCode}
+              onChange={(e) => setVerificationCode(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-lg mb-3"
+              placeholder="Ingresa el código"
+            />
+
+            <button
+              onClick={async () => {
+                try {
+                  setVerifying(true);
+                  await onVerifyEmail(email, verificationCode.trim());
+                  alert('Correo verificado correctamente. Ahora puedes iniciar sesión.');
+                  onClose();
+                } catch (error: any) {
+                  alert(error.message || 'No se pudo verificar el correo');
+                } finally {
+                  setVerifying(false);
+                }
+              }}
+              className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 mb-2"
+              disabled={verifying || !verificationCode.trim()}
+            >
+              {verifying ? 'Verificando...' : 'Verificar código'}
+            </button>
+
             <button
               onClick={onClose}
-              className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              className="w-full py-3 border border-gray-300 dark:border-slate-700 rounded-lg"
             >
-              Entendido
+              Verificar después
             </button>
           </div>
         </div>
@@ -148,30 +177,6 @@ export default function AuthModal({ mode, onClose, onLogin, onRegister, onSwitch
                 />
               </div>
             </div>
-          )}
-
-          {mode === 'login' && (
-            <div className="text-right">
-              <a href="#" className="text-sm text-blue-600 hover:underline">
-                ¿Olvidaste tu contraseña?
-              </a>
-            </div>
-          )}
-
-          {mode === 'login' && (
-            <button
-              type="button"
-              onClick={async () => {
-                try {
-                  await onGoogleLogin();
-                } catch (error: any) {
-                  alert(error.message || 'No se pudo iniciar con Google');
-                }
-              }}
-              className="w-full py-3 border border-gray-300 dark:border-slate-700 rounded-lg font-medium mb-2"
-            >
-              Continuar con Google
-            </button>
           )}
 
           <button
