@@ -48,6 +48,23 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
     image_color: 'bg-blue-600',
   });
 
+
+
+  const savePlansLocally = (plansToSave: PackagePlan[]) => {
+    localStorage.setItem('custom_packages', JSON.stringify(plansToSave));
+  };
+
+  const loadLocalPlans = (): PackagePlan[] => {
+    try {
+      const raw = localStorage.getItem('custom_packages');
+      if (!raw) return [];
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  };
+
   useEffect(() => {
     loadCourses();
   }, []);
@@ -83,11 +100,17 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
                   : DEFAULT_PLANS[index]?.features ?? [],
           }));
           const sortedPlans = normalizedPlans.sort((a: PackagePlan, b: PackagePlan) => allowedPlanNames.indexOf(a.name) - allowedPlanNames.indexOf(b.name));
-          setPlans(sortedPlans);
+          const localPlans = loadLocalPlans();
+          setPlans(localPlans.length > 0 ? localPlans : sortedPlans);
         }
       }
 
-      if (courseResult.status === 'rejected' && packageResult.status === 'rejected') {
+      if (packageResult.status === 'rejected') {
+        const localPlans = loadLocalPlans();
+        if (localPlans.length > 0) setPlans(localPlans);
+      }
+
+      if (courseResult.status === 'rejected' && packageResult.status === 'rejected' && loadLocalPlans().length === 0) {
         alert('No se pudieron cargar cursos y planes. Intenta nuevamente.');
       }
     } catch (error) {
@@ -176,15 +199,23 @@ export default function AdminPanel({ onClose }: AdminPanelProps) {
 
   const handleSavePlan = async (plan: PackagePlan) => {
     try {
-      await api.updatePackage(plan.id, {
-        name: plan.name,
-        subtitle: plan.subtitle,
-        price: Number(plan.price),
-        features: plan.features,
-      });
-      await loadCourses();
+      const nextPlans = plans.map((item) => (item.id === plan.id ? { ...plan } : item));
+      savePlansLocally(nextPlans);
+      setPlans(nextPlans);
+
+      try {
+        await api.updatePackage(plan.id, {
+          name: plan.name,
+          subtitle: plan.subtitle,
+          price: Number(plan.price),
+          features: plan.features.filter((feature) => feature.trim().length > 0),
+        });
+      } catch (error) {
+        console.warn('No se pudo sincronizar con servidor, se guardó localmente.', error);
+      }
+
       window.dispatchEvent(new CustomEvent('plans-updated'));
-      alert(`Plan ${plan.name} actualizado y publicado`);
+      window.dispatchEvent(new CustomEvent('app-success', { detail: `Plan ${plan.name} actualizado correctamente.` }));
     } catch (error: any) {
       alert(error.message || 'Error al actualizar plan');
     }

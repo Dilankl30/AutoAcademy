@@ -23,6 +23,18 @@ const DEFAULT_PACKAGES: Package[] = [
 
 const OWNER_WHATSAPP = '593989961041';
 
+
+const getLocalPackages = (): Package[] => {
+  try {
+    const raw = localStorage.getItem('custom_packages');
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+};
+
 type PaymentMethod = 'card' | 'transfer';
 
 export default function PricingCards({ selectedPackage, onSelectPackage }: PricingCardsProps) {
@@ -31,6 +43,8 @@ export default function PricingCards({ selectedPackage, onSelectPackage }: Prici
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('card');
 
   useEffect(() => {
+    const localPackages = getLocalPackages();
+    if (localPackages.length > 0) setPackages(localPackages);
     loadPackages();
 
     const handlePlansUpdated = () => loadPackages();
@@ -58,7 +72,11 @@ export default function PricingCards({ selectedPackage, onSelectPackage }: Prici
   const loadPackages = async () => {
     try {
       const data = await api.getPackages();
-      if (!Array.isArray(data) || data.length === 0) return;
+      if (!Array.isArray(data) || data.length === 0) {
+        const localPackages = getLocalPackages();
+        if (localPackages.length > 0) setPackages(localPackages);
+        return;
+      }
 
       const normalized = data.map((pkg: any, index: number) => ({
         id: Number(pkg.id ?? index + 1),
@@ -75,6 +93,7 @@ export default function PricingCards({ selectedPackage, onSelectPackage }: Prici
       }));
 
       setPackages(normalized);
+      localStorage.setItem('custom_packages', JSON.stringify(normalized));
     } catch (error) {
       console.error('Error loading packages:', error);
     }
