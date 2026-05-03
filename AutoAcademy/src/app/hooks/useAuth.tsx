@@ -20,6 +20,25 @@ const ADMIN_EMAIL = 'admin@autoacademy.com';
 
 const isDefaultAdmin = (email?: string | null) => email?.toLowerCase() === ADMIN_EMAIL;
 
+
+const parseJsonSafe = async (response: Response) => {
+  const raw = await response.text();
+  if (!raw) return null;
+
+  try {
+    return JSON.parse(raw);
+  } catch {
+    throw new Error(`Respuesta inválida del servidor (${response.status}). Verifica los logs de Supabase Edge Function.`);
+  }
+};
+
+const extractErrorMessage = (payload: any, fallback: string) => {
+  if (!payload) return fallback;
+  if (typeof payload === 'string') return payload;
+  return payload.error || payload.message || fallback;
+};
+
+
 export function useAuth() {
   const [authState, setAuthState] = useState<AuthState>({
     user: null,
@@ -45,7 +64,7 @@ export function useAuth() {
         },
       });
 
-      const data = await response.json();
+      const data = await parseJsonSafe(response);
 
       if (data.profile) {
         setAuthState({
@@ -80,10 +99,10 @@ export function useAuth() {
         body: JSON.stringify({ email, password, username }),
       });
 
-      const data = await response.json();
+      const data = await parseJsonSafe(response);
 
       if (!response.ok) {
-        throw new Error(data.error || 'Error al registrarse');
+        throw new Error(extractErrorMessage(data, 'Error al registrarse'));
       }
 
       return { success: true };
@@ -104,10 +123,10 @@ export function useAuth() {
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await response.json();
+      const data = await parseJsonSafe(response);
 
       if (!response.ok) {
-        throw new Error(data.error || 'Error al iniciar sesión');
+        throw new Error(extractErrorMessage(data, 'Error al iniciar sesión'));
       }
 
       localStorage.setItem('access_token', data.session.access_token);
@@ -145,8 +164,8 @@ export function useAuth() {
       body: JSON.stringify({ email, code }),
     });
 
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error || 'Código inválido o expirado');
+    const data = await parseJsonSafe(response);
+    if (!response.ok) throw new Error(extractErrorMessage(data, 'Código inválido o expirado'));
     return data;
   };
 
@@ -162,8 +181,8 @@ export function useAuth() {
       body: JSON.stringify({ email }),
     });
 
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error || 'No se pudo reenviar el código');
+    const data = await parseJsonSafe(response);
+    if (!response.ok) throw new Error(extractErrorMessage(data, 'No se pudo reenviar el código'));
     return data;
   };
 
