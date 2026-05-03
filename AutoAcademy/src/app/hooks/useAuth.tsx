@@ -4,6 +4,8 @@ import { projectId, publicAnonKey } from '/utils/supabase/info';
 interface User {
   id: string;
   email: string;
+  username?: string;
+  plan?: 'Básico' | 'Intermedio' | 'Completo' | null;
   is_admin: boolean;
 }
 
@@ -17,6 +19,25 @@ const API_BASE = `https://${projectId}.supabase.co/functions/v1/make-server-a96c
 const ADMIN_EMAIL = 'admin@autoacademy.com';
 
 const isDefaultAdmin = (email?: string | null) => email?.toLowerCase() === ADMIN_EMAIL;
+
+
+const parseJsonSafe = async (response: Response) => {
+  const raw = await response.text();
+  if (!raw) return null;
+
+  try {
+    return JSON.parse(raw);
+  } catch {
+    throw new Error(`Respuesta inválida del servidor (${response.status}). Verifica los logs de Supabase Edge Function.`);
+  }
+};
+
+const extractErrorMessage = (payload: any, fallback: string) => {
+  if (!payload) return fallback;
+  if (typeof payload === 'string') return payload;
+  return payload.error || payload.message || fallback;
+};
+
 
 export function useAuth() {
   const [authState, setAuthState] = useState<AuthState>({
@@ -43,13 +64,15 @@ export function useAuth() {
         },
       });
 
-      const data = await response.json();
+      const data = await parseJsonSafe(response);
 
       if (data.profile) {
         setAuthState({
           user: {
             id: data.profile.id,
             email: data.profile.email,
+            username: data.profile.username || data.profile.full_name || undefined,
+            plan: data.profile.plan || data.profile.current_plan || data.profile.package_plan || null,
             is_admin: isDefaultAdmin(data.profile.email) || data.profile.is_admin || false,
           },
           loading: false,
@@ -65,7 +88,7 @@ export function useAuth() {
     }
   };
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (email: string, password: string, username: string) => {
     try {
       const response = await fetch(`${API_BASE}/auth/signup`, {
         method: 'POST',
@@ -73,13 +96,13 @@ export function useAuth() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${publicAnonKey}`,
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, username }),
       });
 
-      const data = await response.json();
+      const data = await parseJsonSafe(response);
 
       if (!response.ok) {
-        throw new Error(data.error || 'Error al registrarse');
+        throw new Error(extractErrorMessage(data, 'Error al registrarse'));
       }
 
       return { success: true };
@@ -100,10 +123,10 @@ export function useAuth() {
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await response.json();
+      const data = await parseJsonSafe(response);
 
       if (!response.ok) {
-        throw new Error(data.error || 'Error al iniciar sesión');
+        throw new Error(extractErrorMessage(data, 'Error al iniciar sesión'));
       }
 
       localStorage.setItem('access_token', data.session.access_token);
@@ -112,6 +135,8 @@ export function useAuth() {
         user: {
           id: data.user.id,
           email: data.user.email,
+          username: data.user.user_metadata?.username || undefined,
+          plan: data.user.user_metadata?.plan || null,
           is_admin: isDefaultAdmin(data.user.email) || isDefaultAdmin(email),
         },
         loading: false,
@@ -126,6 +151,39 @@ export function useAuth() {
       console.error('Signin error:', error);
       throw error;
     }
+  };
+
+
+  const verifyEmailCode = async (email: string, code: string) => {
+    const response = await fetch(`${API_BASE}/auth/verify-email`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${publicAnonKey}`,
+      },
+      body: JSON.stringify({ email, code }),
+    });
+
+    const data = await parseJsonSafe(response);
+    if (!response.ok) throw new Error(extractErrorMessage(data, 'Código inválido o expirado'));
+    return data;
+  };
+
+
+
+  const resendVerificationCode = async (email: string) => {
+    const response = await fetch(`${API_BASE}/auth/resend-verification`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${publicAnonKey}`,
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    const data = await parseJsonSafe(response);
+    if (!response.ok) throw new Error(extractErrorMessage(data, 'No se pudo reenviar el código'));
+    return data;
   };
 
   const signOut = async () => {
@@ -154,5 +212,7 @@ export function useAuth() {
     signUp,
     signIn,
     signOut,
+    verifyEmailCode,
+    resendVerificationCode,
   };
 }
