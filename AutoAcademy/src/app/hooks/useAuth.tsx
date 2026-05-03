@@ -77,7 +77,7 @@ export function useAuth() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${publicAnonKey}`,
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, username }),
       });
 
       const data = await response.json();
@@ -150,6 +150,23 @@ export function useAuth() {
     return data;
   };
 
+
+
+  const resendVerificationCode = async (email: string) => {
+    const response = await fetch(`${API_BASE}/auth/resend-verification`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${publicAnonKey}`,
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'No se pudo reenviar el código');
+    return data;
+  };
+
   const signOut = async () => {
     try {
       const token = localStorage.getItem('access_token');
@@ -177,5 +194,6 @@ export function useAuth() {
     signIn,
     signOut,
     verifyEmailCode,
+    resendVerificationCode,
   };
 }

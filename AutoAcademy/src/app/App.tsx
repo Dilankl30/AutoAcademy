@@ -16,7 +16,7 @@ export default function App() {
   const [selectedPackage, setSelectedPackage] = useState<'Básico' | 'Intermedio' | 'Completo' | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [theme, setTheme] = useState<'light' | 'dark'>(() => (localStorage.getItem('theme') as 'light' | 'dark') || 'light');
-  const { user, loading, signIn, signUp, signOut, verifyEmailCode } = useAuth();
+  const { user, loading, signIn, signUp, signOut, verifyEmailCode, resendVerificationCode } = useAuth();
 
   const activePlan = user?.plan ?? selectedPackage;
 
@@ -110,6 +110,7 @@ export default function App() {
           onRegister={handleRegister}
           onSwitchMode={(nextMode) => setAuthModal(nextMode)}
           onVerifyEmail={verifyEmailCode}
+          onResendVerification={resendVerificationCode}
         />
       )}
 

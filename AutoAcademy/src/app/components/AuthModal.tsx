@@ -8,9 +8,10 @@ interface AuthModalProps {
   onRegister: (email: string, password: string, username: string) => Promise<void>;
   onSwitchMode: (nextMode: 'login' | 'register') => void;
   onVerifyEmail: (email: string, code: string) => Promise<void>;
+  onResendVerification: (email: string) => Promise<void>;
 }
 
-export default function AuthModal({ mode, onClose, onLogin, onRegister, onSwitchMode, onVerifyEmail }: AuthModalProps) {
+export default function AuthModal({ mode, onClose, onLogin, onRegister, onSwitchMode, onVerifyEmail, onResendVerification }: AuthModalProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -18,6 +19,7 @@ export default function AuthModal({ mode, onClose, onLogin, onRegister, onSwitch
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [verificationCode, setVerificationCode] = useState('');
   const [verifying, setVerifying] = useState(false);
+  const [resending, setResending] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,6 +85,24 @@ export default function AuthModal({ mode, onClose, onLogin, onRegister, onSwitch
               disabled={verifying || !verificationCode.trim()}
             >
               {verifying ? 'Verificando...' : 'Verificar código'}
+            </button>
+
+            <button
+              onClick={async () => {
+                try {
+                  setResending(true);
+                  await onResendVerification(email);
+                  alert('Te enviamos un nuevo código. Revisa spam/promociones si no lo ves.');
+                } catch (error: any) {
+                  alert(error.message || 'No se pudo reenviar el código');
+                } finally {
+                  setResending(false);
+                }
+              }}
+              className="w-full py-3 border border-gray-300 dark:border-slate-700 rounded-lg mb-2"
+              disabled={resending}
+            >
+              {resending ? 'Reenviando...' : 'Reenviar código'}
             </button>
 
             <button
