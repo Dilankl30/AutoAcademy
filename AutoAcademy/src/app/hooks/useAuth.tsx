@@ -4,6 +4,8 @@ import { projectId, publicAnonKey } from '/utils/supabase/info';
 interface User {
   id: string;
   email: string;
+  username?: string;
+  plan?: 'Básico' | 'Intermedio' | 'Completo' | null;
   is_admin: boolean;
 }
 
@@ -50,6 +52,8 @@ export function useAuth() {
           user: {
             id: data.profile.id,
             email: data.profile.email,
+            username: data.profile.username || data.profile.full_name || undefined,
+            plan: data.profile.plan || data.profile.current_plan || data.profile.package_plan || null,
             is_admin: isDefaultAdmin(data.profile.email) || data.profile.is_admin || false,
           },
           loading: false,
@@ -65,7 +69,7 @@ export function useAuth() {
     }
   };
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (email: string, password: string, username: string) => {
     try {
       const response = await fetch(`${API_BASE}/auth/signup`, {
         method: 'POST',
@@ -73,7 +77,7 @@ export function useAuth() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${publicAnonKey}`,
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, username }),
       });
 
       const data = await response.json();
@@ -112,6 +116,8 @@ export function useAuth() {
         user: {
           id: data.user.id,
           email: data.user.email,
+          username: data.user.user_metadata?.username || undefined,
+          plan: data.user.user_metadata?.plan || null,
           is_admin: isDefaultAdmin(data.user.email) || isDefaultAdmin(email),
         },
         loading: false,
@@ -126,6 +132,39 @@ export function useAuth() {
       console.error('Signin error:', error);
       throw error;
     }
+  };
+
+
+  const verifyEmailCode = async (email: string, code: string) => {
+    const response = await fetch(`${API_BASE}/auth/verify-email`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${publicAnonKey}`,
+      },
+      body: JSON.stringify({ email, code }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Código inválido o expirado');
+    return data;
+  };
+
+
+
+  const resendVerificationCode = async (email: string) => {
+    const response = await fetch(`${API_BASE}/auth/resend-verification`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${publicAnonKey}`,
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'No se pudo reenviar el código');
+    return data;
   };
 
   const signOut = async () => {
@@ -154,5 +193,7 @@ export function useAuth() {
     signUp,
     signIn,
     signOut,
+    verifyEmailCode,
+    resendVerificationCode,
   };
 }
